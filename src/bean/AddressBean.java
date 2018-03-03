@@ -3,7 +3,7 @@ package bean;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 
-public class Address {
+public class AddressBean {
 	
 	private int id;
 	private String street;
@@ -12,11 +12,11 @@ public class Address {
 	private String zip;
 	private String phone;
 	
-	public Address(int id, String street, String province, String country, String zip) {
+	public AddressBean(int id, String street, String province, String country, String zip) {
 		this(id, street, province, country, zip, null);
 	}
 
-	public Address(int id, String street, String province, String country, String zip, String phone) {
+	public AddressBean(int id, String street, String province, String country, String zip, String phone) {
 		super();
 		this.setId(id);
 		this.setStreet(street);
@@ -134,7 +134,7 @@ public class Address {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Address other = (Address) obj;
+		AddressBean other = (AddressBean) obj;
 		if (country == null) {
 			if (other.country != null)
 				return false;
@@ -166,7 +166,7 @@ public class Address {
 	}
 
 	public static void main(String[] args) {
-		Address address = new Address(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
+		AddressBean address = new AddressBean(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
 		String json = address.toJsonObjectBuilder().build().toString();
 		System.out.println(json);
 	}

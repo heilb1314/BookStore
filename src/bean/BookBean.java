@@ -7,19 +7,19 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 
-public class Book {
+public class BookBean {
 	
 	public static enum Category {
-		Science,Fiction,Engineering
+		SCIENCE,FICTION,ENGINEERING
 	}
 
 	private String bid;
 	private String title;
 	private int price;
-	private Book.Category category;
-	private Set<PoItem> poItems = new HashSet<PoItem>(0);
+	private BookBean.Category category;
+	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
-	public Book(String bid, String title, int price, Category category) {
+	public BookBean(String bid, String title, int price, Category category) {
 		super();
 		this.bid = bid;
 		this.title = title;
@@ -58,26 +58,26 @@ public class Book {
 	}
 
 
-	public Book.Category getCategory() {
+	public BookBean.Category getCategory() {
 		return category;
 	}
 
 
-	public void setCategory(Book.Category category) {
+	public void setCategory(BookBean.Category category) {
 		this.category = category;
 	}
 	
-	public Set<PoItem> getPoItems() {
+	public Set<PoItemBean> getPoItems() {
 		return poItems;
 	}
 
-	public void setPoItems(Set<PoItem> poItems) {
+	public void setPoItems(Set<PoItemBean> poItems) {
 		this.poItems = poItems;
 	}
 	
 	public JsonObjectBuilder toJsonObjectBuilder() {
 		JsonArrayBuilder jab = Json.createArrayBuilder();
-		for(PoItem p : this.getPoItems()) {
+		for(PoItemBean p : this.getPoItems()) {
 			jab.add(p.toJsonObjectBuilder());
 		}
 		
@@ -116,7 +116,7 @@ public class Book {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Book other = (Book) obj;
+		BookBean other = (BookBean) obj;
 		if (bid == null) {
 			if (other.bid != null)
 				return false;
@@ -141,7 +141,7 @@ public class Book {
 
 
 	public static void main(String[] args) {
-		Book book = new Book("sample bid","sample title",10,Book.Category.Fiction);
+		BookBean book = new BookBean("sample bid","sample title",10,BookBean.Category.FICTION);
 		String json = book.toJsonObjectBuilder().build().toString();
 		System.out.println(json);
 	}

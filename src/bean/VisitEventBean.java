@@ -4,16 +4,16 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 
-public class VisitEvent {
+public class VisitEventBean {
 	public static enum VisitEventType {
 		VIEW,CART,PURCHASE
 	}
 	
 	String day;
 	String bid;
-	VisitEvent eventType;
+	VisitEventBean eventType;
 	
-	public VisitEvent(String day, String bid, VisitEvent eventType) {
+	public VisitEventBean(String day, String bid, VisitEventBean eventType) {
 		super();
 		this.setDay(day);
 		this.setBid(bid);
@@ -31,10 +31,10 @@ public class VisitEvent {
 	public void setBid(String bid) {
 		this.bid = bid;
 	}
-	public VisitEvent getEventType() {
+	public VisitEventBean getEventType() {
 		return eventType;
 	}
-	public void setEventType(VisitEvent eventType) {
+	public void setEventType(VisitEventBean eventType) {
 		this.eventType = eventType;
 	}
 	

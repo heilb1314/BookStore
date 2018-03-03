@@ -1,20 +1,20 @@
 package bean;
 
-public class PoItemId {
+public class PoItemIdBean {
 	
-	private Book book;
-	private Po po;
+	private BookBean book;
+	private PoBean po;
 	
-	public Book getBook() {
+	public BookBean getBook() {
 		return book;
 	}
-	public void setBook(Book book) {
+	public void setBook(BookBean book) {
 		this.book = book;
 	}
-	public Po getPo() {
+	public PoBean getPo() {
 		return po;
 	}
-	public void setPo(Po po) {
+	public void setPo(PoBean po) {
 		this.po = po;
 	}
 	
@@ -35,7 +35,7 @@ public class PoItemId {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PoItemId other = (PoItemId) obj;
+		PoItemIdBean other = (PoItemIdBean) obj;
 		if (book == null) {
 			if (other.book != null)
 				return false;

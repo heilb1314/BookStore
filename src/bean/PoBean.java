@@ -7,7 +7,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 
-public class Po {
+public class PoBean {
 	
 	public static enum Status {
 		ORDERED, PROCESSED, DENIED
@@ -16,12 +16,12 @@ public class Po {
 	private int id;
 	private String lname;
 	private String fname;
-	private Po.Status status;
-	private Address address;
-	private Set<PoItem> poItems = new HashSet<PoItem>(0);
+	private PoBean.Status status;
+	private AddressBean address;
+	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
 
-	public Po(int id, String lname, String fname, Status status, Address address) {
+	public PoBean(int id, String lname, String fname, Status status, AddressBean address) {
 		super();
 		this.setId(id);
 		this.setLname(lname);
@@ -48,30 +48,30 @@ public class Po {
 	public void setFname(String fname) {
 		this.fname = fname;
 	}
-	public Po.Status getStatus() {
+	public PoBean.Status getStatus() {
 		return status;
 	}
-	public void setStatus(Po.Status status) {
+	public void setStatus(PoBean.Status status) {
 		this.status = status;
 	}
-	public Address getAddress() {
+	public AddressBean getAddress() {
 		return address;
 	}
-	public void setAddress(Address address) {
+	public void setAddress(AddressBean address) {
 		this.address = address;
 	}
 	
-	public Set<PoItem> getPoItems() {
+	public Set<PoItemBean> getPoItems() {
 		return poItems;
 	}
 
-	public void setPoItems(Set<PoItem> items) {
+	public void setPoItems(Set<PoItemBean> items) {
 		this.poItems = items;
 	}
 	
 	public JsonObjectBuilder toJsonObjectBuilder() {
 		JsonArrayBuilder jab = Json.createArrayBuilder();
-		for(PoItem p : this.getPoItems()) {
+		for(PoItemBean p : this.getPoItems()) {
 			jab.add(p.toJsonObjectBuilder());
 		}	
 		return Json.createObjectBuilder()
@@ -90,8 +90,8 @@ public class Po {
 	
 	
 	public static void main(String[] args) {
-		Address address = new Address(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
-		Po po = new Po(1,"Gates", "Bill", Po.Status.PROCESSED, address);
+		AddressBean address = new AddressBean(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
+		PoBean po = new PoBean(1,"Gates", "Bill", PoBean.Status.PROCESSED, address);
 		String json = po.toJsonObjectBuilder().build().toString();
 		System.out.println(json);
 	}

@@ -3,40 +3,40 @@ package bean;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 
-public class PoItem {
+public class PoItemBean {
 	
-	private PoItemId pk = new PoItemId();
+	private PoItemIdBean pk = new PoItemIdBean();
 	private int price;
 	
-	public PoItem(int price) {
+	public PoItemBean(int price) {
 		this(price,null,null);
 	}
 	
-	public PoItem(int price, Po po, Book book) {
+	public PoItemBean(int price, PoBean po, BookBean book) {
 		super();
 		this.setPrice(price);
 		this.getPk().setPo(po);
 		this.getPk().setBook(book);
 	}
 	
-	public PoItemId getPk() {
+	public PoItemIdBean getPk() {
 		return pk;
 	}
 
-	public void setPk(PoItemId pk) {
+	public void setPk(PoItemIdBean pk) {
 		this.pk = pk;
 	}
 
-	public Po getPo() {
+	public PoBean getPo() {
 		return this.getPk().getPo();
 	}
-	public void setPo(Po po) {
+	public void setPo(PoBean po) {
 		this.getPk().setPo(po);
 	}
-	public Book getBook() {
+	public BookBean getBook() {
 		return this.getPk().getBook();
 	}
-	public void setBook(Book book) {
+	public void setBook(BookBean book) {
 		this.getPk().setBook(book);
 	}
 	public int getPrice() {
@@ -60,10 +60,10 @@ public class PoItem {
 	
 	
 	public static void main(String[] args) {
-		Address address = new Address(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
-		Po po = new Po(1,"Gates", "Bill", Po.Status.PROCESSED, address);
-		Book book = new Book("sample bid","sample title",10,Book.Category.Fiction);
-		PoItem poItem = new PoItem(50, po, book);
+		AddressBean address = new AddressBean(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
+		PoBean po = new PoBean(1,"Gates", "Bill", PoBean.Status.PROCESSED, address);
+		BookBean book = new BookBean("sample bid","sample title",10,BookBean.Category.FICTION);
+		PoItemBean poItem = new PoItemBean(50, po, book);
 		String json = poItem.toJsonObjectBuilder().build().toString();
 		System.out.println(json);
 	}
