@@ -4,9 +4,10 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-public class ObjectDAO {
+public class ObjectDAO 
+{
 
-	DataSource ds;
+	protected DataSource ds;
 
 	public ObjectDAO() throws ClassNotFoundException {
 		try {

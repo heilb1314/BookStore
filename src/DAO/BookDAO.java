@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import DAO.ObjectDAO;
 import bean.BookBean;
 
 public class BookDAO extends ObjectDAO {
