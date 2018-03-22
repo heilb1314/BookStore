@@ -17,7 +17,7 @@
 	Get most bought books
 		<table id="result" border="1">
 		<tr>
-			<th>Title</th>
+			<th>Book title</th>
 			<th>Author</th>
 			<th>Total</th>
 		</tr>
@@ -33,7 +33,7 @@
 		Get most popular books from bookstore
 		<table id="result" border="1">
 		<tr>
-			<th>Title</th>
+			<th>Book title</th>
 			<th>Author</th>
 			<th>Total</th>
 		</tr>
