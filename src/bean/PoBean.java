@@ -6,18 +6,35 @@ import java.util.HashSet;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlRootElement(name="purchaseOrder")
+@XmlType(propOrder={"id","lname","fname","status","address","items"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PoBean {
 	
 	public static enum Status {
 		ORDERED, PROCESSED, DENIED
 	}
 	
+	@XmlAttribute
 	private int id;
+	@XmlAttribute
 	private String lname;
+	@XmlAttribute
 	private String fname;
+	@XmlAttribute(name="status")
 	private PoBean.Status status;
+	@XmlElement
 	private AddressBean address;
+	@XmlElementWrapper(name="items")
+    @XmlElement(name="purchaseOrderItem")
 	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
 

@@ -1,3 +1,22 @@
+DROP DATABASE if exists;
+CREATE DATABASE book_store;
+USE book_store;
+/*
+ * a simple user table
+ * id: user id
+ * username: username to log in
+ * password: hashed password
+ */
+DROP TABLE if exists User;
+CREATE TABLE User (
+id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+username varchar(50) NOT NULL UNIQUE,
+password char(50) NOT NULL,
+user_type enum('Visitor','Customer','Partner','Admin') NOT NULL DEFAULT 'Visitor',
+PRIMARY KEY(id),
+INDEX (username)
+);
+
 /** bid: unique identifier of Book (like ISBN)
 * title: title of Book
 * price: unit price WHEN ordered
@@ -56,9 +75,12 @@ lname VARCHAR(20) NOT NULL,
 fname VARCHAR(20) NOT NULL,
 status ENUM('ORDERED','PROCESSED','DENIED') NOT NULL,
 address INT UNSIGNED NOT NULL,
+uid INT UNSIGNED NOT NULL,
 PRIMARY KEY(id),
 INDEX (address),
-FOREIGN KEY (address) REFERENCES Address (id) ON DELETE CASCADE
+INDEX (uid),
+FOREIGN KEY (address) REFERENCES Address (id) ON DELETE CASCADE,
+FOREIGN KEY (uid) REFERENCES User (id) ON DELETE CASCADE
 );
 
 
@@ -105,3 +127,7 @@ FOREIGN KEY(bid) REFERENCES Book(bid)
 INSERT INTO VisitEvent (day, bid, eventtype) VALUES ('12202015', 'b001', 'VIEW');
 INSERT INTO VisitEvent (day, bid, eventtype) VALUES ('12242015', 'b001', 'CART');
 INSERT INTO VisitEvent (day, bid, eventtype) VALUES ('12252015', 'b001', 'PURCHASE');
+
+
+
+

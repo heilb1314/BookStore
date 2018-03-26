@@ -1,17 +1,79 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-	<jsp:directive.page contentType="text/html; charset=UTF-8" 
-		pageEncoding="UTF-8" session="true"/>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsp/jstl/fmt" version="2.0">
+	<jsp:directive.page contentType="text/html; charset=UTF-8"
+		pageEncoding="UTF-8" session="true" />
 	<jsp:output doctype-root-element="html"
 		doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
 		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
 		omit-xml-declaration="true" />
-<html xmlns="http://www.w3.org/1999/xhtml">
+	<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Home Page</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous"></link>
+<link rel="StyleSheet"
+	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
+	title="cse4413" media="screen, print" />
 </head>
 <body>
 
+	<nav
+		class="navbar navbar-expand navbar-light fixed-top bg-light navigation-bar">
+		<a class="navbar-brand" href="${pageContext.request.contextPath}/Start">O.O.G</a>
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="${pageContext.request.contextPath}/Start">Home
+					<span class="sr-only">(current)</span>
+				</a>
+			</li>
+			<li class="nav-item dropdown nav-dropdown">
+				<a class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          			Category
+        			</a>
+		        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+		          <a class="dropdown-item" href="${pageContext.request.contextPath}/Start?category=science">Science</a>
+		          <a class="dropdown-item" href="${pageContext.request.contextPath}/Start?category=fiction">Fiction</a>
+		          <a class="dropdown-item" href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
+		        </div>
+      		</li>
+		</ul>
+		<form class="navbar-nav form-inline my-2 my-lg-0">
+			<input class="form-control mr-sm-2" type="search" name="title" placeholder="Search book here" aria-label="Search" />
+    			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+		</form>
+		<ul class="navbar-nav form-inline my-2 my-lg-0">
+			<li class="nav-item"><a class="nav-link" href="#">Cart <span
+					class="badge badge-secondary">4</span></a></li>
+			<li class="nav-item"><a class="nav-link" href="#">Login</a></li>
+		</ul>
+	</nav>
+
+	<div class="mc-body">
+		<h5 class="mc-title">Books:</h5>
+		<hr />
+		<div class="flex-container">
+			<c:forEach var="book" items="${books}">
+				<div class="book">
+					<div class="card" style="width: 16rem;">
+						<div class="card-body">
+							<h5 class="card-title">${book.title}</h5>
+							<h6 class="card-subtitle mb-2 text-muted">${book.category}
+								--
+								<f:formatNumber type="currency">${book.price}</f:formatNumber>
+							</h6>
+							<a href="#" class="card-link">View</a> <a href="#"
+								class="card-link">Add</a>
+						</div>
+					</div>
+				</div>
+			</c:forEach>
+		</div>
+	</div>
 </body>
-</html>
+	</html>
 </jsp:root>

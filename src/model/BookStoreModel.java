@@ -1,5 +1,6 @@
 package model;
 
+import java.util.List;
 import java.util.Map;
 
 import DAO.BookDAO;
@@ -21,8 +22,12 @@ public class BookStoreModel {
 		}
 	}
 	
-	public Map<String, BookBean> retrieveBooksByCategory(BookBean.Category category) throws Exception {
+	public List<BookBean> retrieveBooksByCategory(BookBean.Category category) throws Exception {
 		return this.bookDAO.getListOfBooksByCategory(category);
+	}
+	
+	public List<BookBean> retrieveBooksByTitle(String title) throws Exception {
+		return this.bookDAO.getListOfBooksByTitle(title);
 	}
 	
 	public Map<Integer, PoBean> retrievePurchaseOrders() throws Exception {

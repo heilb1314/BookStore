@@ -6,18 +6,44 @@ import java.util.Set;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlRootElement(name="book")
+@XmlType(propOrder={"bid","title","price","category"})
 public class BookBean {
 	
+	@XmlType
+	@XmlEnum(String.class)
 	public static enum Category {
-		SCIENCE,FICTION,ENGINEERING
+		@XmlEnumValue("Science") SCIENCE,
+		@XmlEnumValue("Fiction") FICTION,
+		@XmlEnumValue("Engineering") ENGINEERING;
+		
+		public static Category getCategory(String i) {
+			if(i==null) return null;
+			switch(i) {
+			case "science": return Category.SCIENCE;
+			case "fiction": return Category.FICTION;
+			case "engineering": return Category.ENGINEERING;
+			default: return null;
+			}
+		}
 	}
-
+	
+	
 	private String bid;
 	private String title;
 	private int price;
 	private BookBean.Category category;
 	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
+	
+	public BookBean() {
+		this("","",0,null);
+	}
 	
 	public BookBean(String bid, String title, int price, Category category) {
 		super();
@@ -26,7 +52,6 @@ public class BookBean {
 		this.price = price;
 		this.category = category;
 	}
-
 
 	public String getBid() {
 		return bid;
@@ -57,16 +82,15 @@ public class BookBean {
 		this.price = price;
 	}
 
-
 	public BookBean.Category getCategory() {
 		return category;
 	}
-
 
 	public void setCategory(BookBean.Category category) {
 		this.category = category;
 	}
 	
+	@XmlTransient
 	public Set<PoItemBean> getPoItems() {
 		return poItems;
 	}

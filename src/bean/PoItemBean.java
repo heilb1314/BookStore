@@ -2,10 +2,20 @@ package bean;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlRootElement(name="purchaseOrderItem")
+@XmlType(propOrder={"price","book"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PoItemBean {
 	
 	private PoItemIdBean pk = new PoItemIdBean();
+	@XmlAttribute
 	private int price;
 	
 	public PoItemBean(int price) {
@@ -26,13 +36,14 @@ public class PoItemBean {
 	public void setPk(PoItemIdBean pk) {
 		this.pk = pk;
 	}
-
+	
 	public PoBean getPo() {
 		return this.getPk().getPo();
 	}
 	public void setPo(PoBean po) {
 		this.getPk().setPo(po);
 	}
+	@XmlElement(name="book")
 	public BookBean getBook() {
 		return this.getPk().getBook();
 	}
