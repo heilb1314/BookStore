@@ -21,13 +21,14 @@ import jdbc.DbManager;
 @WebServlet("/Start")
 public class Start extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	
        
     /**
      * @see HttpServlet#HttpServlet()
      */
     public Start() {
         super();
-        // TODO Auto-generated constructor stub
 //        DbManager db = new DbManager();
 //        ResultSet r = db.getBooks();
 //        if(r!=null) {

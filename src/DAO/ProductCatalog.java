@@ -13,6 +13,11 @@ import bean.Book;
 public class ProductCatalog 
 {
 	private DataSource dataSource;
+	private static int id;
+	private static String title;
+	private static String price;
+	private static String category; 
+	private static String author;
 	
 	public ProductCatalog() throws ClassNotFoundException{
 		try{
@@ -37,11 +42,11 @@ public class ProductCatalog
 			
 			while (result.next()) 
 			{
-				int id = result.getInt("id");
-				String title = result.getString("TITLE") ;
-				String price = result.getString("PRICE");
-				String category = result.getString("CATEGORY");
-				String author = result.getString("AUTHOR");
+				id = result.getInt("id");
+				title = result.getString("TITLE") ;
+				price = result.getString("PRICE");
+				category = result.getString("CATEGORY");
+				author = result.getString("AUTHOR");
 
 				Book b1 = new Book(id, title, author, price, category);
 				b1.setBid(id);
