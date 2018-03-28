@@ -68,7 +68,8 @@ body, html {
 			<br/>
 	</c:forEach>
 	<br/>
-    <h5>Total cost: <f:formatNumber type="currency">${requestScope.totalPrice}</f:formatNumber></h5> <button type="submit" name="checkout" value="Checkout" class="w3-button w3-black">Check out</button>
+    <h5>Total cost: <f:formatNumber type="currency">${requestScope.totalPrice}</f:formatNumber></h5> 
+    <button type="submit" name="checkout" value="Checkout" class="w3-button w3-black">Check out</button>
 	</form>
   </div>
 </div>	
