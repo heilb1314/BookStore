@@ -73,19 +73,19 @@ public class ProductCatalog
 	public String getProductInfo(String id) throws Exception
 	{
 		int intId = Integer.parseInt(id);
-		String query = "select * from book where id =" + intId;
+		final  String query = "select * from book where id =" + intId;
 		Map<String, Book> res = runQuery(query);
 		if(res.size()  == 0)
 		{
 			return "<html lang=\"en\"><body><h1> No Book by this product Id!</h1></body></html>";
 		}
 		
-		Book b = res.get(id);
-		b.setBid(intId);
-		System.out.println(b.getTitle());
-		return  "<h1>" + b.getTitle() + "</h1>" 
-				+ "<h2>" + b.getAuthor() + "</h2>"
-				+ "<h3>" + b.getPrice() + "</h3>"
-				+ "<h4>"+ b.getCategory() + "</h4>";		
+		Book b1 = res.get(id);
+		b1.setBid(intId);
+		System.out.println(b1.getTitle());
+		return  "<h1>" + b1.getTitle() + "</h1>" 
+				+ "<h2>" + b1.getAuthor() + "</h2>"
+				+ "<h3>" + b1.getPrice() + "</h3>"
+				+ "<h4>"+ b1.getCategory() + "</h4>";		
 	}
 }
