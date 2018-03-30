@@ -73,7 +73,7 @@ public class PoItemBean {
 	public static void main(String[] args) {
 		AddressBean address = new AddressBean(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
 		PoBean po = new PoBean(1,"Gates", "Bill", PoBean.Status.PROCESSED, address);
-		BookBean book = new BookBean("sample bid","sample title",10,BookBean.Category.FICTION);
+		BookBean book = new BookBean("sample bid","sample title",10,BookBean.Category.FICTION,"lalalala");
 		PoItemBean poItem = new PoItemBean(50, po, book);
 		String json = poItem.toJsonObjectBuilder().build().toString();
 		System.out.println(json);

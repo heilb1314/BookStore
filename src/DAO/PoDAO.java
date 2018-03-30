@@ -78,7 +78,7 @@ public class PoDAO extends ObjectDAO {
 			}
 			
 			// create and add new PoItem to PO
-			BookBean book = new BookBean(bid, title, bPrice, category);
+			BookBean book = new BookBean(bid, title, bPrice, category,"lalalal");
 			PoItemBean poItem = new PoItemBean(price, po, book);
 			po.getPoItems().add(poItem);
 		}

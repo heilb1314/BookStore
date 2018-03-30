@@ -1,4 +1,4 @@
-DROP DATABASE if exists;
+DROP DATABASE if exists book_store;
 CREATE DATABASE book_store;
 USE book_store;
 /*
@@ -12,6 +12,8 @@ CREATE TABLE User (
 id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 username varchar(50) NOT NULL UNIQUE,
 password char(50) NOT NULL,
+lname VARCHAR(20) NOT NULL,
+fname VARCHAR(20) NOT NULL,
 user_type enum('Visitor','Customer','Partner','Admin') NOT NULL DEFAULT 'Visitor',
 PRIMARY KEY(id),
 INDEX (username)
@@ -29,14 +31,15 @@ bid VARCHAR(20) NOT NULL,
 title VARCHAR(60) NOT NULL,
 price INT NOT NULL,
 category ENUM('Science','Fiction','Engineering') NOT NULL,
+description VARCHAR(255) NOT NULL,
+rating FLOAT NOT NULL DEFAULT 0.0,
 PRIMARY KEY(bid)
 );
 
 
-INSERT INTO Book (bid, title, price, category) VALUES ('b001', 'Little Prince', 20, 'Fiction');
-INSERT INTO Book (bid, title, price, category) VALUES ('b002','Physics', 201, 'Science');
-INSERT INTO Book (bid, title, price, category) VALUES ('b003','Mechanics' ,100,'Engineering');
-
+INSERT INTO Book (bid, title, price, category, description) VALUES ('b001', 'Little Prince', 20, 'Fiction', 'A fiction story about a little prince.');
+INSERT INTO Book (bid, title, price, category, description) VALUES ('b002','Physics', 201, 'Science', 'Introduction to Physics. You will learn the basic Physics knowledge');
+INSERT INTO Book (bid, title, price, category, description) VALUES ('b003','Mechanics' ,100,'Engineering', 'Introduction to Mechanics.');
 
 /* Address
 * id: address id
@@ -71,8 +74,6 @@ INSERT INTO Address (id, street, province, country, zip, phone) VALUES (3, '789 
 DROP TABLE if exists PO;
 CREATE TABLE PO (
 id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-lname VARCHAR(20) NOT NULL,
-fname VARCHAR(20) NOT NULL,
 status ENUM('ORDERED','PROCESSED','DENIED') NOT NULL,
 address INT UNSIGNED NOT NULL,
 uid INT UNSIGNED NOT NULL,
@@ -82,11 +83,6 @@ INDEX (uid),
 FOREIGN KEY (address) REFERENCES Address (id) ON DELETE CASCADE,
 FOREIGN KEY (uid) REFERENCES User (id) ON DELETE CASCADE
 );
-
-
-INSERT INTO PO (id, lname, fname, status, address) VALUES (1, 'John', 'White', 'PROCESSED', '1');
-INSERT INTO PO (id, lname, fname, status, address) VALUES (2, 'Peter', 'Black', 'DENIED', '2');
-INSERT INTO PO (id, lname, fname, status, address) VALUES (3, 'Andy', 'Green', 'ORDERED', '3');
 
 
 /* Items on order
@@ -99,16 +95,14 @@ CREATE TABLE POItem (
 id INT UNSIGNED NOT NULL,
 bid VARCHAR(20) NOT NULL,
 price INT UNSIGNED NOT NULL,
+rating INT UNSIGNED,
+review VARCHAR(255),
 PRIMARY KEY(id,bid),
 INDEX (id),
 FOREIGN KEY(id) REFERENCES PO(id) ON DELETE CASCADE,
 INDEX (bid),
 FOREIGN KEY(bid) REFERENCES Book(bid) ON DELETE CASCADE
 );
-
-INSERT INTO POItem (id, bid, price) VALUES (1, 'b001', '20');
-INSERT INTO POItem (id, bid, price) VALUES (2, 'b002', '201');
-INSERT INTO POItem (id, bid, price) VALUES (3, 'b003', '100');
 
 
 /* visit to website

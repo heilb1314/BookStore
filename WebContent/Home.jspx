@@ -12,68 +12,79 @@
 	<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Home Page</title>
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-	crossorigin="anonymous"></link>
 <link rel="StyleSheet"
 	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
 	title="cse4413" media="screen, print" />
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/res/mc.js">
+	;
+</script>
 </head>
 <body>
-
-	<nav
-		class="navbar navbar-expand navbar-light fixed-top bg-light navigation-bar">
-		<a class="navbar-brand" href="${pageContext.request.contextPath}/Start">O.O.G</a>
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item active">
-				<a class="nav-link" href="${pageContext.request.contextPath}/Start">Home
-					<span class="sr-only">(current)</span>
-				</a>
+	<div class="navbar">
+		<ul>
+			<li><a href="${pageContext.request.contextPath}/Start">Home</a></li>
+			<li class="dropdown"><a href="javascript:void(0)"
+				class="dropbtn">Category</a>
+				<div class="dropdown-content">
+					<a href="${pageContext.request.contextPath}/Start?category=science">Science</a>
+					<a href="${pageContext.request.contextPath}/Start?category=fiction">Fiction</a>
+					<a
+						href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
+				</div></li>
+			<c:choose>
+				<c:when test="${empty user}">
+					<li style="float: right"><a href="#">Login</a></li>
+					<li style="float: right"><a href="#">Register</a></li>
+				</c:when>
+				<c:otherwise>
+					<li style="float: right"><a href="#">Logout</a></li>
+				</c:otherwise>
+			</c:choose>
+			<li style="float: right"><a href="#">Cart <span
+					class="badge">4</span></a></li>
+			<li style="float: right">
+				<form class="search-form">
+					<input class="navbar-search-input" type="search" name="title"
+						placeholder="Search book here" aria-label="Search" />
+				</form>
 			</li>
-			<li class="nav-item dropdown nav-dropdown">
-				<a class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          			Category
-        			</a>
-		        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-		          <a class="dropdown-item" href="${pageContext.request.contextPath}/Start?category=science">Science</a>
-		          <a class="dropdown-item" href="${pageContext.request.contextPath}/Start?category=fiction">Fiction</a>
-		          <a class="dropdown-item" href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
-		        </div>
-      		</li>
 		</ul>
-		<form class="navbar-nav form-inline my-2 my-lg-0">
-			<input class="form-control mr-sm-2" type="search" name="title" placeholder="Search book here" aria-label="Search" />
-    			<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-		</form>
-		<ul class="navbar-nav form-inline my-2 my-lg-0">
-			<li class="nav-item"><a class="nav-link" href="#">Cart <span
-					class="badge badge-secondary">4</span></a></li>
-			<li class="nav-item"><a class="nav-link" href="#">Login</a></li>
-		</ul>
-	</nav>
+	</div>
 
 	<div class="mc-body">
 		<h5 class="mc-title">Books:</h5>
 		<hr />
 		<div class="flex-container">
 			<c:forEach var="book" items="${books}">
-				<div class="book">
-					<div class="card" style="width: 16rem;">
-						<div class="card-body">
-							<h5 class="card-title">${book.title}</h5>
-							<h6 class="card-subtitle mb-2 text-muted">${book.category}
-								--
-								<f:formatNumber type="currency">${book.price}</f:formatNumber>
-							</h6>
-							<a href="#" class="card-link">View</a> <a href="#"
-								class="card-link">Add</a>
-						</div>
-					</div>
+				<div class="book card">
+					<h5 class="card-title">Title: ${book.title}</h5>
+					<h6 class="card-subtitle">Category: ${book.category}</h6>
+					<h6 class="card-price">
+						Price:
+						<f:formatNumber type="currency">${book.price}</f:formatNumber>
+					</h6>
+					<button class="btn" onclick='openModal("${book.title}","${book.category}","${book.price}","${book.description}")'>View</button>
+					<button class="btn">Add</button>
 				</div>
 			</c:forEach>
 		</div>
+
+		<div id="book-detail-div" style="background-color: rgba(0, 0, 0, 0.5)">
+			<div>
+				<div>
+					<h4 id="book-detail-title">title</h4>
+					<p id="book-detail-category">category</p>
+					<p id="book-detail-price">price</p>
+					<p id="book-detail-description">description</p>
+				</div>
+				<div>
+					Click here to [<a href='#' onclick='closeModal()'>close</a>]
+				</div>
+			</div>
+		</div>
 	</div>
+
 </body>
 	</html>
 </jsp:root>

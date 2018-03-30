@@ -1,24 +1,15 @@
 package ctrl;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.SchemaFactory;
 
 import bean.BookBean;
-import model.BookListWrapper;
 import model.BookStoreModel;
 
 /**
@@ -56,6 +47,7 @@ public class Start extends HttpServlet {
 				} else {
 					BookBean.Category c = BookBean.Category.getCategory(bookQueryCategory);
 					books = this.getModel().retrieveBooksByCategory(c);
+					System.out.println(books.toString());
 				}
 				// // Object to XML
 				// JAXBContext jaxbContext = JAXBContext.newInstance(BookListWrapper.class); //

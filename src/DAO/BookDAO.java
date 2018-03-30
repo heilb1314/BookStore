@@ -60,8 +60,11 @@ public class BookDAO extends ObjectDAO {
 			String bid = r.getString("BID");
 			String title = r.getString("TITLE");
 			int price = r.getInt("PRICE");
+			int rating = r.getInt("rating");
 			BookBean.Category category = BookBean.Category.getCategory(r.getString("CATEGORY"));
-			BookBean book = new BookBean(bid, title, price, category);
+			String description = r.getString("DESCRIPTION");
+			BookBean book = new BookBean(bid, title, price, category, description);
+			book.setRating(rating);
 			rv.add(book);
 		}
 		return rv;
