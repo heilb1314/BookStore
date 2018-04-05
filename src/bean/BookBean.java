@@ -3,9 +3,6 @@ package bean;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,21 +36,22 @@ public class BookBean {
 	private String bid;
 	private String title;
 	private int price;
-	private int rating = 0;
+	private int rating;
 	private BookBean.Category category;
 	private String description;
 	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
 	public BookBean() {
-		this("","",0,null,"");
+		this("","",0,null,0,"");
 	}
 	
-	public BookBean(String bid, String title, int price, Category category, String description) {
+	public BookBean(String bid, String title, int price, Category category, int rating, String description) {
 		super();
 		this.bid = bid;
 		this.title = title;
 		this.price = price;
 		this.category = category;
+		this.rating = 0;
 		this.description = description;
 	}
 
@@ -118,26 +116,6 @@ public class BookBean {
 	public void setRating(int rating) {
 		this.rating = rating;
 	}
-
-	public JsonObjectBuilder toJsonObjectBuilder() {
-		JsonArrayBuilder jab = Json.createArrayBuilder();
-		for(PoItemBean p : this.getPoItems()) {
-			jab.add(p.toJsonObjectBuilder());
-		}
-		
-		return Json.createObjectBuilder()
-				.add("bid", this.getBid())
-				.add("title", this.getTitle())
-				.add("price", this.getPrice())
-				.add("category", this.getCategory().toString())
-				.add("poitems", jab);
-	}
-	
-	@Override
-	public String toString() {
-		return this.toJsonObjectBuilder().build().toString();
-	}
-	
 	
 	@Override
 	public int hashCode() {
@@ -189,13 +167,5 @@ public class BookBean {
 			return false;
 		return true;
 	}
-
-
-	public static void main(String[] args) {
-		BookBean book = new BookBean("sample bid","sample title",10,BookBean.Category.FICTION,"lalalal");
-		String json = book.toJsonObjectBuilder().build().toString();
-		System.out.println(json);
-	}
-
 
 }

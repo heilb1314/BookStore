@@ -11,7 +11,7 @@
 		omit-xml-declaration="true" />
 	<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Home Page</title>
+<title>Payment Page</title>
 <link rel="StyleSheet"
 	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
 	title="cse4413" media="screen, print" />
@@ -44,60 +44,11 @@
 			<li style="float: right"><a
 				href="${pageContext.request.contextPath}/Start/Cart">Cart <span
 					class="badge">${empty sessionScope.cart ? 0 : sessionScope.cart.size()}</span></a></li>
-			<li style="float: right">
-				<form class="search-form" action="" method="GET">
-					<input class="navbar-search-input" type="search" name="search"
-						placeholder="Search book here" aria-label="Search" />
-				</form>
-			</li>
 		</ul>
 	</div>
-
 	<div class="mc-body">
-		<c:if test="${not empty errorMessage}">
-			<h4 class="error">${errorMessage}</h4>
-		</c:if>
-		<h5 class="mc-title">Books:</h5>
-		<hr />
-		<div class="flex-container">
-			<c:forEach var="book" items="${books}">
-				<div class="book card">
-					<form
-						action=""
-						method="POST" onsubmit="return validateShoppingCartItem(this);">
-						<input type="text" class="hidden" name="bid" value="${book.bid}" display="none" />
-						<h5 class="card-title">Title: ${book.title}</h5>
-						<p class="card-subtitle">Category: ${book.category}</p>
-						<p class="card-price">
-							Price:
-							<f:formatNumber type="currency">${book.price}</f:formatNumber>
-						</p>
-						<p class="card-quantity">
-							Quantity: <input name="quantity" type="number" min="1" value="1" />
-						</p>
-						<button class="btn"
-							onclick='openModal("${book.title}","${book.category}","${book.price}","${book.description}")'>View</button>
-						<input type="submit" name="submit" value="Add To Cart" />
-					</form>
-				</div>
-			</c:forEach>
-		</div>
-
-		<div id="book-detail-div" style="background-color: rgba(0, 0, 0, 0.5)">
-			<div>
-				<div>
-					<h4 id="book-detail-title">title</h4>
-					<p id="book-detail-category">category</p>
-					<p id="book-detail-price">price</p>
-					<p id="book-detail-description">description</p>
-				</div>
-				<div>
-					Click here to [<a href='#' onclick='closeModal()'>close</a>]
-				</div>
-			</div>
-		</div>
+		<h3>Payment</h3>
 	</div>
-
 </body>
 	</html>
 </jsp:root>

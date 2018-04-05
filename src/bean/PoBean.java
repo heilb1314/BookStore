@@ -3,14 +3,13 @@ package bean;
 import java.util.Set;
 import java.util.HashSet;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -18,9 +17,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder={"id","lname","fname","status","address","items"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PoBean {
-	
+	@XmlType
+	@XmlEnum(String.class)
 	public static enum Status {
-		ORDERED, PROCESSED, DENIED
+		@XmlEnumValue("Ordered") ORDERED,
+		@XmlEnumValue("Processed") PROCESSED,
+		@XmlEnumValue("Denied") DENIED
 	}
 	
 	@XmlAttribute
@@ -84,33 +86,6 @@ public class PoBean {
 
 	public void setPoItems(Set<PoItemBean> items) {
 		this.poItems = items;
-	}
-	
-	public JsonObjectBuilder toJsonObjectBuilder() {
-		JsonArrayBuilder jab = Json.createArrayBuilder();
-		for(PoItemBean p : this.getPoItems()) {
-			jab.add(p.toJsonObjectBuilder());
-		}	
-		return Json.createObjectBuilder()
-				.add("id", this.getId())
-				.add("lname", this.getLname())
-				.add("fname", this.getFname())
-				.add("status", this.getStatus().toString())
-				.add("address", this.getAddress().toJsonObjectBuilder())
-				.add("poitems", jab);
-	}
-	
-	@Override
-	public String toString() {
-		return this.toJsonObjectBuilder().build().toString();
-	}
-	
-	
-	public static void main(String[] args) {
-		AddressBean address = new AddressBean(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
-		PoBean po = new PoBean(1,"Gates", "Bill", PoBean.Status.PROCESSED, address);
-		String json = po.toJsonObjectBuilder().build().toString();
-		System.out.println(json);
 	}
 
 }
