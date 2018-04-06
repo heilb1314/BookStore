@@ -50,12 +50,25 @@
 							<f:formatNumber type="currency">${item.price}</f:formatNumber>
 						</p>
 						<button class="btn"
-							onclick='openModal("${book.title}","${book.category}","${book.price}","${book.description}")'>View</button>
+							onclick='openModal("${book.title}","${book.category}","${book.price}","${book.description}"); return false;'>View</button>
 						<input type="submit" name="submit" value="Update" /> <input
 							type="submit" name="submit" value="Remove" />
 					</form>
 				</div>
 			</c:forEach>
+			<div id="book-detail-div" style="background-color: rgba(0, 0, 0, 0.5)">
+				<div>
+					<div>
+						<h4 id="book-detail-title">title</h4>
+						<p id="book-detail-category">category</p>
+						<p id="book-detail-price">price</p>
+						<p id="book-detail-description">description</p>
+					</div>
+					<div>
+						Click here to [<a href='#' onclick='closeModal()'>close</a>]
+					</div>
+				</div>
+			</div>
 		</div>
 		<c:if test="${not empty sessionScope.cart}">
 			<form action="" method="POST">

@@ -45,23 +45,22 @@
 							Quantity: <input name="quantity" type="number" min="1" value="1" />
 						</p>
 						<button class="btn"
-							onclick='openModal("${book.title}","${book.category}","${book.price}","${book.description}")'>View</button>
+							onclick='openModal("${book.title}","${book.category}","${book.price}","${book.description}"); return false;'>View</button>
 						<input type="submit" name="submit" value="Add To Cart" />
 					</form>
 				</div>
 			</c:forEach>
-		</div>
-
-		<div id="book-detail-div" style="background-color: rgba(0, 0, 0, 0.5)">
-			<div>
+			<div id="book-detail-div" style="background-color: rgba(0, 0, 0, 0.5)">
 				<div>
-					<h4 id="book-detail-title">title</h4>
-					<p id="book-detail-category">category</p>
-					<p id="book-detail-price">price</p>
-					<p id="book-detail-description">description</p>
-				</div>
-				<div>
-					Click here to [<a href='#' onclick='closeModal()'>close</a>]
+					<div>
+						<h4 id="book-detail-title">title</h4>
+						<p id="book-detail-category">category</p>
+						<p id="book-detail-price">price</p>
+						<p id="book-detail-description">description</p>
+					</div>
+					<div>
+						Click here to [<a href='#' onclick='closeModal()'>close</a>]
+					</div>
 				</div>
 			</div>
 		</div>
