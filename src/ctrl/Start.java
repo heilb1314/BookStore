@@ -52,8 +52,16 @@ public class Start extends HttpServlet {
 			this.handleGetHomePageRequest(request, response);
 		} else if (path.equals("/Start/Cart")) {
 			this.handleGetShoppingCartPageRequest(request,response);
+		} else if (path.equals("/Start/Register")) {
+			this.handleGetRegisterPageRequest(request, response);
+		} else if (path.equals("/Start/Login")) {
+			this.handleGetLoginPageRequest(request, response);
+		} else if (path.equals("/Start/Logout")) {
+			this.getModel().logout(request);
+			this.handleGetHomePageRequest(request, response);
 		}
 	}
+
 	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -115,6 +123,44 @@ public class Start extends HttpServlet {
 				// go to payment page
 				
 				request.getRequestDispatcher("/Payment.jspx").forward(request, response);
+				return;
+			}
+		} else if (path.equals("/Start/Register") && submit != null) {
+			String username = request.getParameter("username");
+			String firstname = request.getParameter("firstname");
+			String lastname = request.getParameter("lastname");
+			String password = request.getParameter("password");
+			String verifiedPassword = request.getParameter("verifiedPassword");
+			try {
+				this.getModel().registerUser(username, firstname, lastname, password, verifiedPassword, request);
+				request.setAttribute("successMessage", "User successfully registered!");
+			} catch(Exception e) {
+				e.printStackTrace();
+				// setup error message and store form info
+				request.setAttribute("errorMessage", e.getMessage());
+				request.setAttribute("username", username);
+				request.setAttribute("firstname", firstname);
+				request.setAttribute("lastname", lastname);
+			}
+			this.handleGetRegisterPageRequest(request,response);
+			return;
+			
+		} else if (path.equals("/Start/Login") && submit != null) {
+			String username = request.getParameter("username");
+			String password = request.getParameter("password");
+			try {
+				this.getModel().loginUser(username, password, request);
+				request.setAttribute("successMessage", "User successfully logged in!");
+			} catch(Exception e) {
+				e.printStackTrace();
+				request.setAttribute("errorMessage", e.getMessage());
+				request.setAttribute("username", username);
+			}
+			this.handleGetLoginPageRequest(request, response);
+			return;
+		} else if (path.equals("/Start/Payment") && submit != null) {
+			if (submit.equals("Confirm Order")) {
+				// TODO: confirm order
 			}
 		}
 		
@@ -253,7 +299,17 @@ public class Start extends HttpServlet {
 		request.setAttribute("books", books);
 		request.getRequestDispatcher("/ShoppingCart.jspx").forward(request, response);
 	}
- 	
+	
+	private void handleGetRegisterPageRequest(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.getRequestDispatcher("/Register.jspx").forward(request, response);
+	}
+	
+	private void handleGetLoginPageRequest(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.getRequestDispatcher("/Login.jspx").forward(request, response);
+	}
+	
 }
 
 

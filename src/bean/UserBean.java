@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+
 @XmlRootElement(name="user")
 @XmlType(propOrder={"id","username","firstname","lastname","userType"})
 public class UserBean {
@@ -16,6 +17,18 @@ public class UserBean {
 		@XmlEnumValue("Customer") CUSTOMER,
 		@XmlEnumValue("Partner") PARTNER,
 		@XmlEnumValue("Administrator") ADMIN;
+		
+		public static UserType getUserType(String type) {
+			if(type==null) return null;
+			switch(type.toLowerCase()) {
+			case "visitor": return UserType.VISITOR;
+			case "customer": return UserType.CUSTOMER;
+			case "partner": return UserType.PARTNER;
+			case "admin": return UserType.ADMIN;
+			default: return null;
+			}
+		}
+		
 	}
 	
 	private int id;

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsp/jstl/fmt" version="2.0">
+	<jsp:directive.page contentType="text/html; charset=UTF-8"
+		pageEncoding="UTF-8" session="true" />
+	<jsp:output doctype-root-element="html"
+		doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+		omit-xml-declaration="true" />
+	<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Register Page</title>
+<link rel="StyleSheet"
+	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
+	title="cse4413" media="screen, print" />
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/res/mc.js">
+	;
+</script>
+</head>
+<body>
+	<jsp:include page="NavBar.jspx" />
+	<div class="mc-body">
+		<c:choose>
+			<c:when test="${empty successMessage}">
+				<c:if test="${not empty errorMessage}">
+					<h4 class="error">${errorMessage}</h4>
+				</c:if>
+				<form action="" method="POST"
+					onsubmit="return validateRegister(this);">
+					<fieldset>
+						<legend>Register a new User</legend>
+						<div id="errorDiv">
+							<label class="error"></label>
+						</div>
+						<TABLE>
+							<tr>
+								<td><label for="username">Username (at least 4 lengths):<i class="error"
+										id="usernameErr">*</i></label></td>
+								<td><input type="text" name="username" value="${username}"
+									placeholder="Enter username" /></td>
+							</tr>
+							<tr>
+								<td><label for="firstname">Firstname (at least 4 lengths):<i
+										class="error" id="firstnameErr">*</i></label></td>
+								<td><input type="text" name="firstname"
+									value="${firstname}" placeholder="Enter firstname" /></td>
+							</tr>
+							<tr>
+								<td><label for="lastname">Lastname (at least 4 lengths):<i class="error"
+										id="lastnameErr">*</i></label></td>
+								<td><input type="text" name="lastname" value="${lastname}"
+									placeholder="Enter lastname" /></td>
+							</tr>
+							<tr>
+								<td><label for="password">Password (at least 6 lengths):<i class="error"
+										id="passwordErr">*</i></label></td>
+								<td><input type="password" name="password"
+									placeholder="Enter password" /></td>
+							</tr>
+							<tr>
+								<td><label for="verifiedPassword">Verify Password:<i
+										class="error" id="verifyPasswordErr">*</i></label></td>
+								<td><input type="password" name="verifiedPassword"
+									placeholder="Re-enter password" /></td>
+							</tr>
+						</TABLE>
+						<input type="submit" name="submit" value="Register" />
+					</fieldset>
+				</form>
+			</c:when>
+			<c:otherwise>
+				<h3>${successMessage}</h3>
+			</c:otherwise>
+		</c:choose>
+	</div>
+
+</body>
+	</html>
+</jsp:root>

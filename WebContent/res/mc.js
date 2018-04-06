@@ -1,4 +1,8 @@
-
+function searchBook(form, path) {
+	var text = form.elements.search.value;
+	var searchPath = path + "?search=" + text;
+	window.location.href = searchPath;
+}
 
 function openModal(title, category, price, description) {
 	el = document.getElementById("book-detail-div");

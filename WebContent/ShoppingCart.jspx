@@ -21,31 +21,7 @@
 </script>
 </head>
 <body>
-	<div class="navbar">
-		<ul>
-			<li><a href="${pageContext.request.contextPath}/Start">Home</a></li>
-			<li class="dropdown"><a href="javascript:void(0)"
-				class="dropbtn">Category</a>
-				<div class="dropdown-content">
-					<a href="${pageContext.request.contextPath}/Start?category=science">Science</a>
-					<a href="${pageContext.request.contextPath}/Start?category=fiction">Fiction</a>
-					<a
-						href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
-				</div></li>
-			<c:choose>
-				<c:when test="${empty user}">
-					<li style="float: right"><a href="#">Login</a></li>
-					<li style="float: right"><a href="#">Register</a></li>
-				</c:when>
-				<c:otherwise>
-					<li style="float: right"><a href="#">Logout</a></li>
-				</c:otherwise>
-			</c:choose>
-			<li style="float: right"><a
-				href="${pageContext.request.contextPath}/Start/Cart">Cart <span
-					class="badge">${empty sessionScope.cart ? 0 : sessionScope.cart.size()}</span></a></li>
-		</ul>
-	</div>
+	<jsp:include page="NavBar.jspx"/>
 	<div class="mc-body">
 		<h3>My Shopping Cart</h3>
 		<h4>

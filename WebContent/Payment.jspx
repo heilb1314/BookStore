@@ -21,33 +21,141 @@
 </script>
 </head>
 <body>
-	<div class="navbar">
-		<ul>
-			<li><a href="${pageContext.request.contextPath}/Start">Home</a></li>
-			<li class="dropdown"><a href="javascript:void(0)"
-				class="dropbtn">Category</a>
-				<div class="dropdown-content">
-					<a href="${pageContext.request.contextPath}/Start?category=science">Science</a>
-					<a href="${pageContext.request.contextPath}/Start?category=fiction">Fiction</a>
-					<a
-						href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
-				</div></li>
-			<c:choose>
-				<c:when test="${empty user}">
-					<li style="float: right"><a href="#">Login</a></li>
-					<li style="float: right"><a href="#">Register</a></li>
-				</c:when>
-				<c:otherwise>
-					<li style="float: right"><a href="#">Logout</a></li>
-				</c:otherwise>
-			</c:choose>
-			<li style="float: right"><a
-				href="${pageContext.request.contextPath}/Start/Cart">Cart <span
-					class="badge">${empty sessionScope.cart ? 0 : sessionScope.cart.size()}</span></a></li>
-		</ul>
-	</div>
+	<jsp:include page="NavBar.jspx" />
 	<div class="mc-body">
-		<h3>Payment</h3>
+		<c:choose>
+			<c:when test="${empty sessionScope.user}">
+				<h1>Please Login First!</h1>
+			</c:when>
+			<c:otherwise>
+				<form action="" method="POST"
+					onsubmit="return validateAddress(this);">
+					<fieldset>
+						<legend>Payment</legend>
+						<div id="errorDiv">
+							<label class="error"></label>
+						</div>
+						<p>
+							Total:
+							<f:formatNumber type="currency">${sessionScope.cartPrice}</f:formatNumber>
+						</p>
+						<div id="shippingDiv">
+							<h3>Shipping Information:</h3>
+							<TABLE>
+								<tr>
+									<td><label for="street">Street:<i class="error"
+											id="streetErr">*</i>
+									</label></td>
+									<td><input type="text" name="street" value="${street}"
+										placeholder="Enter street" /></td>
+								</tr>
+								<tr>
+									<td><label for="province">Province:<i
+											class="error" id="provinceErr">*</i>
+									</label></td>
+									<td><input type="text" name="province" value="${province}"
+										placeholder="Enter province" /></td>
+								</tr>
+								<tr>
+									<td><label for="country">Country:<i class="error"
+											id="countryErr">*</i>
+									</label></td>
+									<td><input type="text" name="country" value="${country}"
+										placeholder="Enter country" /></td>
+								</tr>
+								<tr>
+									<td><label for="zip">Zip Code:<i class="error"
+											id="zipErr">*</i>
+									</label></td>
+									<td><input type="text" name="zip"
+										placeholder="Enter Zip Code" /></td>
+								</tr>
+								<tr>
+									<td><label for="phone">Phone Number:<i
+											class="error" id="phoneErr">*</i></label></td>
+									<td><input type="text" name="phone"
+										placeholder="Enter phone number" /></td>
+								</tr>
+							</TABLE>
+						</div>
+
+						<div id="billingDiv">
+							<h3>Billing Information: <span style="font-weight:normal; font-size:14px;"><input type="checkbox" checked="checked" />Same as Shipping</span></h3>
+							<TABLE>
+								<tr>
+									<td><label for="streetBill">Street:<i
+											class="error" id="streetBillErr">*</i>
+									</label></td>
+									<td><input type="text" name="streetBill"
+										value="${streetBill}" placeholder="Enter street" /></td>
+								</tr>
+								<tr>
+									<td><label for="provinceBill">Province:<i
+											class="error" id="provinceBillErr">*</i>
+									</label></td>
+									<td><input type="text" name="provinceBill"
+										value="${provinceBill}" placeholder="Enter province" /></td>
+								</tr>
+								<tr>
+									<td><label for="countryBill">Country:<i
+											class="error" id="countryBillErr">*</i>
+									</label></td>
+									<td><input type="text" name="countryBill"
+										value="${countryBill}" placeholder="Enter country" /></td>
+								</tr>
+								<tr>
+									<td><label for="zipBill">Zip Code:<i class="error"
+											id="zipBillErr">*</i>
+									</label></td>
+									<td><input type="text" name="zipBill"
+										placeholder="Enter Zip Code" /></td>
+								</tr>
+								<tr>
+									<td><label for="phoneBill">Phone Number:<i
+											class="error" id="phoneBillErr">*</i></label></td>
+									<td><input type="text" name="phoneBill"
+										placeholder="Enter phone number" /></td>
+								</tr>
+							</TABLE>
+						</div>
+
+						<div id="paymentInfo">
+							<h3>Payment Information:</h3>
+							<TABLE>
+								<tr>
+									<td><label for="cardname">Card Name:<i
+											class="error" id="cardNameErr">*</i>
+									</label></td>
+									<td><input type="text" name="cardName"
+										placeholder="FirstName LastName" value="${user.firstname} ${user.lastname}" /></td>
+								</tr>
+								<tr>
+									<td><label for="creditCard">Credit Card:<i
+											class="error" id="creditCardErr">*</i>
+									</label></td>
+									<td><input type="text" name="creditCard"
+										placeholder="Credit Card" /></td>
+								</tr>
+								<tr>
+									<td><label for="expirationDate">Expiration date
+											(MM/YYYY):<i class="error" id="expirationDateErr">*</i>
+									</label></td>
+									<td><input type="text" name="expirationDate"
+										placeholder="Expiration date (MM/YYYY)" /></td>
+								</tr>
+								<tr>
+									<td><label for="cvc">CVC/CVV:<i class="error"
+											id="cvcErr">*</i>
+									</label></td>
+									<td><input type="text" name="cvc" placeholder="CVC/CVV" /></td>
+								</tr>
+							</TABLE>
+						</div>
+						<input type="submit" name="submit" value="Confirm Order" />
+					</fieldset>
+				</form>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </body>
 	</html>
