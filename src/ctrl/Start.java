@@ -119,11 +119,6 @@ public class Start extends HttpServlet {
 				}
 				this.handleGetShoppingCartPageRequest(request,response);
 				return;
-			} else if (submit.equals("Go To Payment")) {
-				// go to payment page
-				
-				request.getRequestDispatcher("/Payment.jspx").forward(request, response);
-				return;
 			}
 		} else if (path.equals("/Start/Register") && submit != null) {
 			String username = request.getParameter("username");
@@ -161,6 +156,11 @@ public class Start extends HttpServlet {
 		} else if (path.equals("/Start/Payment") && submit != null) {
 			if (submit.equals("Confirm Order")) {
 				// TODO: confirm order
+			} else if (submit.equals("Go To Payment")) {
+				// go to payment page
+				
+				request.getRequestDispatcher("/Payment.jspx").forward(request, response);
+				return;
 			}
 		}
 		
@@ -236,10 +236,11 @@ public class Start extends HttpServlet {
 		Map<String, ShoppingCartItemBean> cart = this.getMyCart(request);
 		if(cart.containsKey(bid)) {
 			cart.get(bid).setQuantity(cart.get(bid).getQuantity()+item.getQuantity());
+			System.out.println(cart.get(bid).getPrice());
 		} else {
 			cart.put(bid, item);
-			this.updateCart(cart, request);
 		}
+		this.updateCart(cart, request);
 	}
 	
 	/**

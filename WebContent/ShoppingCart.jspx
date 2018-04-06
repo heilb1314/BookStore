@@ -71,7 +71,7 @@
 			</div>
 		</div>
 		<c:if test="${not empty sessionScope.cart}">
-			<form action="" method="POST">
+			<form action="${pageContext.request.contextPath}/Start/Payment" method="POST">
 				<input type="submit" name="submit" value="Go To Payment" />
 			</form>
 		</c:if>
