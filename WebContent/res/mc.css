@@ -22,6 +22,11 @@ i {
 	display: none;
 }
 
+input[type=submit], button {
+	margin: 4px 4px;
+	padding: 4px; 4px;
+}
+
 .navbar {
 	position: fixed;
 	top: 0;
@@ -149,6 +154,7 @@ li.dropdown {
 .navbar-search-button {
 	display: inline-block;
 	text-align: center;
+	margin: 0px 0px!important;
 	padding: 14px 5px;
 	width: 80px;
 	height: 100%:

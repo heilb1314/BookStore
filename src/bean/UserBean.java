@@ -84,5 +84,5 @@ public class UserBean {
 	public void setUserType(UserType userType) {
 		this.userType = userType;
 	}
-
+	
 }

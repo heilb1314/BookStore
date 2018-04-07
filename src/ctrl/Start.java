@@ -57,7 +57,7 @@ public class Start extends HttpServlet {
 		} else if (path.equals("/Start/Login")) {
 			this.handleGetLoginPageRequest(request, response);
 		} else if (path.equals("/Start/Logout")) {
-			this.getModel().logout(request);
+			this.getModel().getUserModel().logout(request);
 			this.handleGetHomePageRequest(request, response);
 		}
 	}
@@ -82,7 +82,7 @@ public class Start extends HttpServlet {
 				// debug
 				System.out.println("Adding bid="+bid+"&quantity="+quantityStr+" to cart...");
 				try {
-					this.addToCart(bid, quantityStr, request);
+					this.getModel().getCartModel().addToCart(bid, quantityStr, request);
 				} catch(Exception e) {
 					e.printStackTrace();
 					request.setAttribute("errorMessage", e.getMessage());
@@ -98,7 +98,7 @@ public class Start extends HttpServlet {
 				// debug
 				System.out.println("Removing "+bid+" from cart...");
 				try {
-					this.removeFromCart(bid, request);
+					this.getModel().getCartModel().removeFromCart(bid, request);
 				} catch(Exception e) {
 					e.printStackTrace();
 					request.setAttribute("errorMessage", e.getMessage());
@@ -112,7 +112,7 @@ public class Start extends HttpServlet {
 				// debug
 				System.out.println("Updating bid="+bid+"&quantity="+quantityStr+" ...");
 				try {
-					this.updateCartItemQuantity(bid, quantityStr, request);
+					this.getModel().getCartModel().updateCartItemQuantity(bid, quantityStr, request);
 				} catch(Exception e) {
 					e.printStackTrace();
 					request.setAttribute("errorMessage", e.getMessage());
@@ -127,7 +127,7 @@ public class Start extends HttpServlet {
 			String password = request.getParameter("password");
 			String verifiedPassword = request.getParameter("verifiedPassword");
 			try {
-				this.getModel().registerUser(username, firstname, lastname, password, verifiedPassword, request);
+				this.getModel().getUserModel().registerUser(username, firstname, lastname, password, verifiedPassword, request);
 				request.setAttribute("successMessage", "User successfully registered!");
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -144,7 +144,7 @@ public class Start extends HttpServlet {
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			try {
-				this.getModel().loginUser(username, password, request);
+				this.getModel().getUserModel().loginUser(username, password, request);
 				request.setAttribute("successMessage", "User successfully logged in!");
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -155,10 +155,52 @@ public class Start extends HttpServlet {
 			return;
 		} else if (path.equals("/Start/Payment") && submit != null) {
 			if (submit.equals("Confirm Order")) {
-				// TODO: confirm order
+				// process payment
+				String street = request.getParameter("street");
+				String province = request.getParameter("province");
+				String country = request.getParameter("country");
+				String zip = request.getParameter("zip");
+				String phone = request.getParameter("phone");
+				String sameAddress = request.getParameter("sameAddress");
+				String bstreet = request.getParameter("bstreet");
+				String bprovince = request.getParameter("bprovince");
+				String bcountry = request.getParameter("bcountry");
+				String bzip = request.getParameter("bzip");
+				System.out.println("sameAddress="+sameAddress);
+				if(sameAddress!=null) {
+					bstreet = street;
+					bprovince = province;
+					bcountry = country;
+					bzip = zip;
+				}
+				String firstname = request.getParameter("firstname");
+				String lastname = request.getParameter("lastname");
+				String cardNumber = request.getParameter("cardnumber");
+				String month = request.getParameter("month");
+				String year = request.getParameter("year");
+				String cvc = request.getParameter("cvc");
+				// debug
+				System.out.println("Shipping Info:");
+				System.out.println(String.format("street=%s  province=%s  country=%s  zip=%s  phone=%s  sameAddress=%s", street,province,country,zip,phone,sameAddress));
+				System.out.println("Billing Info:");
+				System.out.println(String.format("street=%s  province=%s  country=%s  zip=%s", bstreet,bprovince,bcountry,bzip));
+				System.out.println("Credit Card Info:");
+				System.out.println(String.format("firstname=%s  lastname=%s  cardnumber=%s  month=%s  year=%s  cvc/cvv=%s", firstname,lastname,cardNumber,month,year,cvc));
+				
+				try {
+					this.getModel().processPo(street, province, country, zip, phone, bstreet, bprovince, bcountry, bzip, firstname, lastname, cardNumber, month, year, cvc, request);
+					request.setAttribute("poSuccessMessage", "Order Successfully Completed!");
+					System.out.println("Order Successfully Completed!");
+					this.getModel().getCartModel().updateCart(new HashMap<String, ShoppingCartItemBean>(), request);
+				} catch (Exception e) {
+					e.printStackTrace();
+					this.savePurchaseFormInfo(street, province, country, zip, phone, sameAddress, bstreet, bprovince, bcountry, bzip, firstname, lastname, request);
+					request.setAttribute("poErrorMessage", e.getMessage());
+				}
+				request.getRequestDispatcher("/Payment.jspx").forward(request, response);
+				return;
 			} else if (submit.equals("Go To Payment")) {
 				// go to payment page
-				
 				request.getRequestDispatcher("/Payment.jspx").forward(request, response);
 				return;
 			}
@@ -181,98 +223,36 @@ public class Start extends HttpServlet {
 		return model;
 	}
 	
+	
 	/**
-	 * Get Session User
+	 * set request attributes for shipping billing info and first last name for purchase form
+	 * @param street
+	 * @param province
+	 * @param country
+	 * @param zip
+	 * @param phone
+	 * @param sameAddress
+	 * @param bstreet
+	 * @param bprovince
+	 * @param bcountry
+	 * @param bzip
+	 * @param firstname
+	 * @param lastname
 	 * @param request
-	 * @return
 	 */
-	private UserBean getUser(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		try {
-			UserBean user = (UserBean) session.getAttribute("user");
-			return user;
-		} catch(Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	/**
-	 * Get my cart
-	 * @return
-	 */
-	private Map<String, ShoppingCartItemBean> getMyCart(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		Map<String, ShoppingCartItemBean> cart = (Map<String, ShoppingCartItemBean>) session.getAttribute("cart");
-		if (cart == null) {
-			cart = new HashMap<String, ShoppingCartItemBean>();
-			session.setAttribute("cart", cart);
-		}
-		return cart;
-	}
-	
-	/**
-	 * Update shopping cart and recalculate the total price
-	 * @param cart
-	 */
-	private void updateCart(Map<String, ShoppingCartItemBean> cart, HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		session.setAttribute("cart", cart);
-		double price = 0.0;
-		for(ShoppingCartItemBean item : cart.values()) {
-			price += item.getPrice();
-		}
-		session.setAttribute("cartPrice", price);
-	}
-	
-	/**
-	 * Add book with selected quantity to my cart. quantity will accumulate if book already in the cart.
-	 * @param bid
-	 * @param quantityStr
-	 * @throws Exception
-	 */
-	private void addToCart(String bid, String quantityStr, HttpServletRequest request) throws Exception {
-		ShoppingCartItemBean item = this.getModel().retrieveShoppingCartItem(bid, quantityStr);
-		Map<String, ShoppingCartItemBean> cart = this.getMyCart(request);
-		if(cart.containsKey(bid)) {
-			cart.get(bid).setQuantity(cart.get(bid).getQuantity()+item.getQuantity());
-			System.out.println(cart.get(bid).getPrice());
-		} else {
-			cart.put(bid, item);
-		}
-		this.updateCart(cart, request);
-	}
-	
-	/**
-	 * Remove selected book from my cart
-	 * @param bid
-	 * @throws Exception
-	 */
-	private void removeFromCart(String bid, HttpServletRequest request) throws Exception {
-		Map<String, ShoppingCartItemBean> cart = this.getMyCart(request);
-		if(cart.containsKey(bid)) {
-			cart.remove(bid);
-			this.updateCart(cart, request);
-		} else {
-			throw new Exception("Book is not in Cart.");
-		}
-	}
-	
-	/**
-	 * Update one shopping cart book quantity, quantity must be greater than 1.
-	 * @param bid
-	 * @param quantityStr
-	 * @throws Exception
-	 */
-	private void updateCartItemQuantity(String bid, String quantityStr, HttpServletRequest request) throws Exception {
-		ShoppingCartItemBean item = this.getModel().retrieveShoppingCartItem(bid, quantityStr);
-		Map<String, ShoppingCartItemBean> cart = this.getMyCart(request);
-		if(cart.containsKey(bid)) {
-			cart.get(bid).setQuantity(item.getQuantity());
-			this.updateCart(cart, request);
-		} else {
-			throw new Exception("Book is not in Cart.");
-		}
+	private void savePurchaseFormInfo(String street, String province, String country, String zip, String phone, String sameAddress, String bstreet, String bprovince, String bcountry, String bzip, String firstname, String lastname, HttpServletRequest request) {
+		request.setAttribute("street", street);
+		request.setAttribute("province", province);
+		request.setAttribute("country", country);
+		request.setAttribute("zip", zip);
+		request.setAttribute("phone", phone);
+		request.setAttribute("sameAddress", sameAddress);
+		request.setAttribute("bstreet", bstreet);
+		request.setAttribute("bprovince", bprovince);
+		request.setAttribute("bcountry", bcountry);
+		request.setAttribute("bzip", bzip);
+		request.setAttribute("firstname", firstname);
+		request.setAttribute("lastname", lastname);
 	}
 	
 	public void handleGetHomePageRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -285,7 +265,6 @@ public class Start extends HttpServlet {
 			} else {
 				BookBean.Category c = BookBean.Category.getCategory(bookQueryCategory);
 				books = this.getModel().retrieveBooksByCategory(c);
-				System.out.println(books.toString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -296,7 +275,7 @@ public class Start extends HttpServlet {
 	}
 	
 	public void handleGetShoppingCartPageRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		List<ShoppingCartItemBean> books = new ArrayList<ShoppingCartItemBean>(this.getMyCart(request).values());
+		List<ShoppingCartItemBean> books = new ArrayList<ShoppingCartItemBean>(this.getModel().getCartModel().getMyCart(request).values());
 		request.setAttribute("books", books);
 		request.getRequestDispatcher("/ShoppingCart.jspx").forward(request, response);
 	}

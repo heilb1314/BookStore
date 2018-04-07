@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+
 @XmlRootElement(name="purchaseOrder")
 @XmlType(propOrder={"id","lname","fname","status","address","items"})
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -22,15 +23,23 @@ public class PoBean {
 	public static enum Status {
 		@XmlEnumValue("Ordered") ORDERED,
 		@XmlEnumValue("Processed") PROCESSED,
-		@XmlEnumValue("Denied") DENIED
+		@XmlEnumValue("Denied") DENIED;
+		
+		public static Status getStatus(String status) {
+			if(status==null) return null;
+			switch(status.toLowerCase()) {
+			case "ordered": return Status.ORDERED;
+			case "processed": return Status.PROCESSED;
+			case "denied": return Status.DENIED;
+			default: return null;
+			}
+		}
 	}
 	
 	@XmlAttribute
 	private int id;
 	@XmlAttribute
-	private String lname;
-	@XmlAttribute
-	private String fname;
+	private UserBean user;
 	@XmlAttribute(name="status")
 	private PoBean.Status status;
 	@XmlElement
@@ -40,11 +49,10 @@ public class PoBean {
 	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
 
-	public PoBean(int id, String lname, String fname, Status status, AddressBean address) {
+	public PoBean(int id, UserBean user, Status status, AddressBean address) {
 		super();
 		this.setId(id);
-		this.setLname(lname);
-		this.setFname(fname);
+		this.setUser(user);
 		this.setStatus(status);
 		this.setAddress(address);
 	}
@@ -54,18 +62,6 @@ public class PoBean {
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public String getLname() {
-		return lname;
-	}
-	public void setLname(String lname) {
-		this.lname = lname;
-	}
-	public String getFname() {
-		return fname;
-	}
-	public void setFname(String fname) {
-		this.fname = fname;
 	}
 	public PoBean.Status getStatus() {
 		return status;
@@ -86,6 +82,14 @@ public class PoBean {
 
 	public void setPoItems(Set<PoItemBean> items) {
 		this.poItems = items;
+	}
+
+	public UserBean getUser() {
+		return user;
+	}
+
+	public void setUser(UserBean user) {
+		this.user = user;
 	}
 
 }

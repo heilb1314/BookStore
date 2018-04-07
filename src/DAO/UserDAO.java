@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 
 import java.security.SecureRandom;
 
+import bean.AddressBean;
 import bean.UserBean;
 import bean.UserBean.UserType;
 
@@ -15,6 +16,50 @@ public class UserDAO extends ObjectDAO {
 
 	public UserDAO() throws Exception {
 		super();
+	}
+	
+	/**
+	 * Update user type
+	 * @param id
+	 * @param userType
+	 * @throws Exception
+	 */
+	public void updateUserType(int id, UserType userType) throws Exception {
+		String query = "UPDATE user SET user_type=? WHERE id=?";
+		Connection con = this.ds.getConnection();
+		PreparedStatement p = con.prepareStatement(query);
+		p.setString(1, userType.toString());
+		p.setInt(2, id);
+		p.executeUpdate();
+		p.close();
+		con.close();
+	}
+	
+	/**
+	 * Get User by id
+	 * @param uid
+	 * @return
+	 * @throws Exception
+	 */
+	public UserBean getUserById(int uid) throws Exception {
+		UserBean user = null;
+		String query = "SELECT * FROM user WHERE id = ?";
+		Connection con = this.ds.getConnection();
+		PreparedStatement p = con.prepareStatement(query);
+		p.setInt(1, uid);
+		ResultSet r = p.executeQuery();
+		if(r.next()) {
+			int id = r.getInt("id");
+			String username = r.getString("username");
+			String firstname = r.getString("fname");
+			String lastname = r.getString("lname");
+			UserType userType = UserType.getUserType(r.getString("user_type").toLowerCase());
+			user = new UserBean(id,username,firstname,lastname,userType);
+		}
+		r.close();
+		p.close();
+		con.close();
+		return user;
 	}
 	
 	
