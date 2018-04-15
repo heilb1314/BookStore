@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsp/jstl/fmt" version="2.0">
+	<jsp:directive.page contentType="text/html; charset=UTF-8"
+		pageEncoding="UTF-8" session="true" />
+	<jsp:output doctype-root-element="html"
+		doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+		omit-xml-declaration="true" />
+	<div class="book card">
+		<form action="" method="POST"
+			onsubmit="return validateShoppingCartItem(this);">
+			<input type="text" class="hidden" name="bid" value="${book.bid}"
+				display="none" />
+			<h5 class="card-title">Title: ${book.title}</h5>
+			<p class="card-subtitle">Category: ${book.category}</p>
+			<p class="card-price">
+				Price:
+				<f:formatNumber type="currency">${book.price}</f:formatNumber>
+			</p>
+			<p class="card-quantity">
+				Quantity: <input name="quantity" type="number" min="1" value="1" />
+			</p>
+			<p class="card-rating">
+				Rating:
+				<f:formatNumber type="number" minFractionDigits="1"
+					maxFractionDigits="1">${book.getRating()}</f:formatNumber>
+				/5
+			</p>
+			<button class="btn"
+				onclick='openModal("${book.bid}","${book.title}","${book.category}","${book.price}","${book.description}"); return false;'>View</button>
+			<input type="submit" name="submit" value="Add To Cart" />
+		</form>
+	</div>
+</jsp:root>

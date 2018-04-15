@@ -2,14 +2,28 @@ package bean;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlRootElement(name="address")
+@XmlType(propOrder={"id","street","province","country","zip","phone"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AddressBean {
 	
+	@XmlAttribute
 	private int id;
+	@XmlAttribute
 	private String street;
+	@XmlAttribute
 	private String province;
+	@XmlAttribute
 	private String country;
+	@XmlAttribute
 	private String zip;
+	@XmlAttribute
 	private String phone;
 	
 	public AddressBean(int id, String street, String province, String country, String zip) {

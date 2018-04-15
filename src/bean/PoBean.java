@@ -3,29 +3,56 @@ package bean;
 import java.util.Set;
 import java.util.HashSet;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
+
+@XmlRootElement(name="purchaseOrder")
+@XmlType(propOrder={"id","lname","fname","status","address","items"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PoBean {
-	
+	@XmlType
+	@XmlEnum(String.class)
 	public static enum Status {
-		ORDERED, PROCESSED, DENIED
+		@XmlEnumValue("Ordered") ORDERED,
+		@XmlEnumValue("Processed") PROCESSED,
+		@XmlEnumValue("Denied") DENIED;
+		
+		public static Status getStatus(String status) {
+			if(status==null) return null;
+			switch(status.toLowerCase()) {
+			case "ordered": return Status.ORDERED;
+			case "processed": return Status.PROCESSED;
+			case "denied": return Status.DENIED;
+			default: return null;
+			}
+		}
 	}
 	
+	@XmlAttribute
 	private int id;
-	private String lname;
-	private String fname;
+	@XmlAttribute
+	private UserBean user;
+	@XmlAttribute(name="status")
 	private PoBean.Status status;
+	@XmlElement
 	private AddressBean address;
+	@XmlElementWrapper(name="items")
+    @XmlElement(name="purchaseOrderItem")
 	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
 
-	public PoBean(int id, String lname, String fname, Status status, AddressBean address) {
+	public PoBean(int id, UserBean user, Status status, AddressBean address) {
 		super();
 		this.setId(id);
-		this.setLname(lname);
-		this.setFname(fname);
+		this.setUser(user);
 		this.setStatus(status);
 		this.setAddress(address);
 	}
@@ -35,18 +62,6 @@ public class PoBean {
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public String getLname() {
-		return lname;
-	}
-	public void setLname(String lname) {
-		this.lname = lname;
-	}
-	public String getFname() {
-		return fname;
-	}
-	public void setFname(String fname) {
-		this.fname = fname;
 	}
 	public PoBean.Status getStatus() {
 		return status;
@@ -68,32 +83,13 @@ public class PoBean {
 	public void setPoItems(Set<PoItemBean> items) {
 		this.poItems = items;
 	}
-	
-	public JsonObjectBuilder toJsonObjectBuilder() {
-		JsonArrayBuilder jab = Json.createArrayBuilder();
-		for(PoItemBean p : this.getPoItems()) {
-			jab.add(p.toJsonObjectBuilder());
-		}	
-		return Json.createObjectBuilder()
-				.add("id", this.getId())
-				.add("lname", this.getLname())
-				.add("fname", this.getFname())
-				.add("status", this.getStatus().toString())
-				.add("address", this.getAddress().toJsonObjectBuilder())
-				.add("poitems", jab);
+
+	public UserBean getUser() {
+		return user;
 	}
-	
-	@Override
-	public String toString() {
-		return this.toJsonObjectBuilder().build().toString();
-	}
-	
-	
-	public static void main(String[] args) {
-		AddressBean address = new AddressBean(1,"1st Ave","Ontario","Canada","M1M 3G5","647-128-1832");
-		PoBean po = new PoBean(1,"Gates", "Bill", PoBean.Status.PROCESSED, address);
-		String json = po.toJsonObjectBuilder().build().toString();
-		System.out.println(json);
+
+	public void setUser(UserBean user) {
+		this.user = user;
 	}
 
 }

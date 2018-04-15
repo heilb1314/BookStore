@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsp/jstl/fmt" version="2.0">
+	<jsp:directive.page contentType="text/html; charset=UTF-8"
+		pageEncoding="UTF-8" session="true" />
+	<jsp:output doctype-root-element="html"
+		doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+		omit-xml-declaration="true" />
+	<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>BookStore Analytics</title>
+<link rel="StyleSheet"
+	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
+	title="cse4413" media="screen, print" />
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/res/mc.js">
+	;
+</script>
+</head>
+<body>
+	<jsp:directive.include file="NavBar.jspx" />
+	<jsp:directive.include file="Messager.jspx" />
+	<c:if test="${empty errorMessage}">
+		<form action="" method="post" id="aForm">
+			<label>Choose Month:</label> <select name="monthlist" form="aForm"
+				id="monthlist">
+				<option value="january">January</option>
+				<option value="february">February</option>
+				<option value="march">March</option>
+				<option value="april">April</option>
+				<option value="may">May</option>
+				<option value="june">June</option>
+				<option value="july">July</option>
+				<option value="august">August</option>
+				<option value="october">October</option>
+				<option value="november">November</option>
+				<option value="december">December</option>
+			</select>
+			<button id="generate" name="generate" action="submit" value="1">Generate
+				Report</button>
+		</form>
+		<c:if test="${not empty sessionScope['monthBooks']}">
+			<label>Books sold each Month:</label>
+			<table border="1">
+				<tr>
+					<th>BookID</th>
+					<th>Title</th>
+					<th>Publisher</th>
+					<th>Price</th>
+					<th>Category</th>
+				</tr>
+				<c:forEach items="${sessionScope['monthBooks']}" var="books">
+					<tr>
+						<td>${books.getBid()}</td>
+						<td>${books.getTitle()}</td>
+						<td>${books.getPublisher()}</td>
+						<td>${books.getPrice()}</td>
+						<td>${books.getCategory()}</td>
+					</tr>
+				</c:forEach>
+			</table>
+		</c:if>
+		<h4>Top 10 Selling Books</h4>
+		<div class="ttable-div">
+			<table id="popularBooksTable" class="ttable" style="display: none;">
+				<tr>
+					<th>BookID</th>
+					<th>Title</th>
+					<th>Category</th>
+					<th>Price</th>
+					<th>Purchases</th>
+				</tr>
+				<tbody id="popularBooksTableBody">
+				</tbody>
+			</table>
+		</div>
+		<div style="margin-top: 10px">
+			<form action="" method="post">
+				<input id="stats" type="submit" name="submit" value="Get Statistics" />
+			</form>
+			<c:if test="${not empty sessionScope['stats']}">
+				<div class="ttable-div">
+					<table class="ttable">
+						<thead>
+							<th>Total Spent</th>
+							<th>Zip Code</th>
+						</thead>
+						<tbody>
+							<c:forEach items="${sessionScope['stats']}" var="stat">
+								<tr>
+									<td><f:formatNumber type="currency">${stat.getKey()}</f:formatNumber></td>
+									<td>${stat.getValue()}</td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
+			</c:if>
+		</div>
+	</c:if>
+	<script>
+		fetchTop10Purchases();
+		setInterval(fetchTop10Purchases, 3000);
+	</script>
+</body>
+	</html>
+</jsp:root>

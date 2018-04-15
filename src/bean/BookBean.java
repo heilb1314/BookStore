@@ -4,29 +4,58 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
-public class BookBean {
+@XmlRootElement(name="book")
+@XmlType(propOrder={"bid","title","price","category","description","rating"})
+public class BookBean extends JsonBean {
 	
+	@XmlType
+	@XmlEnum(String.class)
 	public static enum Category {
-		SCIENCE,FICTION,ENGINEERING
+		@XmlEnumValue("Science") SCIENCE,
+		@XmlEnumValue("Fiction") FICTION,
+		@XmlEnumValue("Engineering") ENGINEERING;
+		
+		public static Category getCategory(String category) {
+			if(category==null) return null;
+			switch(category.toLowerCase()) {
+			case "science": return Category.SCIENCE;
+			case "fiction": return Category.FICTION;
+			case "engineering": return Category.ENGINEERING;
+			default: return null;
+			}
+		}
+		
 	}
-
+	
+	
 	private String bid;
 	private String title;
 	private int price;
+	private float rating;
 	private BookBean.Category category;
+	private String description;
 	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
-	public BookBean(String bid, String title, int price, Category category) {
+	public BookBean() {
+		this("","",0,null,0,"");
+	}
+	
+	public BookBean(String bid, String title, int price, Category category, float rating, String description) {
 		super();
 		this.bid = bid;
 		this.title = title;
 		this.price = price;
 		this.category = category;
+		this.rating = rating;
+		this.description = description;
 	}
-
 
 	public String getBid() {
 		return bid;
@@ -57,16 +86,15 @@ public class BookBean {
 		this.price = price;
 	}
 
-
 	public BookBean.Category getCategory() {
 		return category;
 	}
-
 
 	public void setCategory(BookBean.Category category) {
 		this.category = category;
 	}
 	
+	@XmlTransient
 	public Set<PoItemBean> getPoItems() {
 		return poItems;
 	}
@@ -75,36 +103,35 @@ public class BookBean {
 		this.poItems = poItems;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public float getRating() {
+		return rating;
+	}
+
+	public void setRating(float rating) {
+		this.rating = rating;
+	}
+	
 	public JsonObjectBuilder toJsonObjectBuilder() {
-		JsonArrayBuilder jab = Json.createArrayBuilder();
-		for(PoItemBean p : this.getPoItems()) {
-			jab.add(p.toJsonObjectBuilder());
-		}
-		
 		return Json.createObjectBuilder()
 				.add("bid", this.getBid())
 				.add("title", this.getTitle())
 				.add("price", this.getPrice())
+				.add("rating", this.getRating())
 				.add("category", this.getCategory().toString())
-				.add("poitems", jab);
+				.add("description", this.getDescription());
 	}
-	
-	@Override
-	public String toString() {
-		return this.toJsonObjectBuilder().build().toString();
-	}
-	
 	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((bid == null) ? 0 : bid.hashCode());
-		result = prime * result + ((category == null) ? 0 : category.hashCode());
-		result = prime * result + ((poItems == null) ? 0 : poItems.hashCode());
-		result = prime * result + price;
-		result = prime * result + ((title == null) ? 0 : title.hashCode());
-		return result;
+		return bid.hashCode();
 	}
 
 
@@ -117,34 +144,14 @@ public class BookBean {
 		if (getClass() != obj.getClass())
 			return false;
 		BookBean other = (BookBean) obj;
-		if (bid == null) {
-			if (other.bid != null)
-				return false;
-		} else if (!bid.equals(other.bid))
-			return false;
-		if (category != other.category)
-			return false;
-		if (poItems == null) {
-			if (other.poItems != null)
-				return false;
-		} else if (!poItems.equals(other.poItems))
-			return false;
-		if (price != other.price)
-			return false;
-		if (title == null) {
-			if (other.title != null)
-				return false;
-		} else if (!title.equals(other.title))
-			return false;
-		return true;
+		return this.getBid().equals(other.getBid());
 	}
-
-
-	public static void main(String[] args) {
-		BookBean book = new BookBean("sample bid","sample title",10,BookBean.Category.FICTION);
-		String json = book.toJsonObjectBuilder().build().toString();
-		System.out.println(json);
+	
+	@Override
+	public String toString() {
+		return String.format("Book: bid=%s, title=%s, price=%d, description=%s, category=%s, rating=%.1f", this.getBid(), this.getTitle(), this.getPrice(), this.getDescription(), this.getCategory().toString(), this.getRating());
 	}
-
+	
+	
 
 }
