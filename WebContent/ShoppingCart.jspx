@@ -11,16 +11,20 @@
 		omit-xml-declaration="true" />
 	<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Shopping Cart</title>
-<link rel="StyleSheet"
-	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
-	title="cse4413" media="screen, print" />
+<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+
+<style>
+.w3-sidebar a {font-family: "Roboto", sans-serif}
+body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
+</style>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/res/mc.js">
 	;
 </script>
-</head>
+<title>BookStore</title>
+
 <body>
+
 	<jsp:include page="NavBar.jspx"/>
 	<div class="mc-body">
 		<h3>My Shopping Cart</h3>
@@ -42,6 +46,58 @@
 		</c:if>
 
 	</div>
+
+<div class="w3-top">
+  <div class="w3-row w3-padding w3-black">
+    <form>
+    <div class="w3-col s3">
+      	<c:choose>
+			<c:when test="${loggedIn}"><input type="submit" name="logout" value="Logout" class="w3-button w3-black"></input></c:when>		
+			<c:otherwise><input type="submit" name="login" value="Login" class="w3-button w3-black"></input></c:otherwise>
+		</c:choose>
+    </div>
+    <div class="w3-col s3">
+      <input type="submit" name="register" value="Register" class="w3-button w3-black"></input>
+    </div>
+    <div class="w3-col s3">
+      <a href="Start" class="w3-button w3-block w3-black">MainPage</a> 
+    </div>
+    <div class="w3-col s3">
+     <a><input type="text" size="16" name="search"></input> <input type="submit" name="searchButton" value="Search" class="w3-button w3-black"></input> </a>
+    </div>
+    </form>
+  </div>
+</div>
+
+<div class="w3-container" id="about">
+  <div class="w3-content" style="max-width:700px">
+    <h5 class="w3-center w3-padding-64"><span class="w3-tag w3-wide">My Shopping Cart</span></h5>
+		<form>
+	<c:forEach var="msg" items="${requestScope.cartItems}" varStatus="status">
+			
+			<h5>${msg}</h5> 
+			<button type="submit" name="deleteQuantity" value="${msg}" class="w3-button w3-black" style="margin-right: 10px;">Delete</button>
+			<input type="number" name="quantity" value="${requestScope.quantities[status.index]}" size="3"></input> 
+			<button type="submit" name="updateQuantity" value="${msg}" class="w3-button w3-black">Update quantity</button>
+			<hr style="height:1px;border:none;color:#333;background-color:#333;" ></hr>
+			<br/>
+	</c:forEach>
+	<br/>
+    <h5>Total cost: <f:formatNumber type="currency">${requestScope.totalPrice}</f:formatNumber></h5> 
+    <button type="submit" name="checkout" value="Checkout" class="w3-button w3-black">Check out</button>
+	</form>
+  </div>
+</div>	
+</body>
+</html>
+<title>Shopping Cart</title>
+<link rel="StyleSheet"
+	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
+	title="cse4413" media="screen, print" />
+
+</head>
+<body>
+
 </body>
 	</html>
 </jsp:root>

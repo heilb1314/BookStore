@@ -15,6 +15,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import jdbc.DbManager;
 import bean.BookBean;
 import bean.BookReviewBean;
 import bean.ShoppingCartItemBean;
@@ -31,14 +36,10 @@ import model.BookStoreUtil;
 @MultipartConfig
 public class Start extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	private String successMessage = "";
 	private String errorMessage = "";
 	private Map<String, Object> requestAttributes = new HashMap<>();
-
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
+  
 	public Start() {
 		super();
 	}
@@ -52,7 +53,7 @@ public class Start extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)Tapan
 			throws ServletException, IOException {
 		String contextPath = request.getContextPath();
 		String path = request.getRequestURI().substring(request.getContextPath().length());
@@ -359,7 +360,10 @@ public class Start extends HttpServlet {
 			String bid = request.getParameter("bid");
 			String quantityStr = request.getParameter("quantity");
 			try {
-				this.getModel().getCartModel().addToCart(bid, quantityStr, request);
+				this.getModel().getCartModel().addToCart(bid, quantityStr, request);<<<<<<< Tapan
+19
+ 
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.errorMessage = e.getMessage();
