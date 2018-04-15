@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsp/jstl/fmt" version="2.0">
+	<jsp:directive.page contentType="text/html; charset=UTF-8"
+		pageEncoding="UTF-8" session="true" />
+	<jsp:output doctype-root-element="html"
+		doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+		omit-xml-declaration="true" />
+	<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Home Page</title>
+<link rel="StyleSheet"
+	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
+	title="cse4413" media="screen, print" />
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/res/mc.js">
+	;
+</script>
+</head>
+<body>
+	<jsp:include page="NavBar.jspx" />
+	<jsp:directive.include file="Messager.jspx" />
+	<div class="mc-body">
+		<h5 class="mc-title">Books:</h5>
+		<hr />
+		<div class="flex-container">
+			<c:forEach var="book" items="${books}">
+				<jsp:directive.include file="BookCard.jspx" />
+			</c:forEach>
+			<jsp:include page="BookDetail.jspx" />
+		</div>
+	</div>
+</body>
+	</html>
+</jsp:root>
