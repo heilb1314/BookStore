@@ -22,22 +22,19 @@
 </head>
 <body>
 	<jsp:include page="NavBar.jspx" />
+	<jsp:directive.include file="Messager.jspx" />
 	<div class="mc-body">
 		<c:choose>
-			<c:when test="${empty sessionScope.user}">
-				<h1>Please Login First!</h1>
-			</c:when>
-			<c:when test="${not empty poSuccessMessage}">
-				<h3>${poSuccessMessage}</h3>
+			<c:when test="${not empty successMessage}">
 				<a href="${pageContext.request.contextPath}/Start">Done</a>
 			</c:when>
-			<c:otherwise>
+			<c:when test="${not empty sessionScope.user}">
 				<form action="" method="POST"
 					onsubmit="return validatePurchase(this);">
 					<fieldset>
 						<legend>Payment</legend>
 						<div id="errorDiv">
-							<label class="error" id="errorLabel">${poErrorMessage}</label>
+							<label class="error" id="errorLabel"></label>
 						</div>
 						<p>
 							Total:
@@ -47,54 +44,76 @@
 							<h3>Shipping Information:</h3>
 							<TABLE>
 								<tr>
-									<td><label for="street">Street:<i class="error" id="streetErr">*</i></label></td>
-									<td><input type="text" name="street" value="${street}" placeholder="Enter street" /></td>
+									<td><label for="street">Street:<i class="error"
+											id="streetErr">*</i></label></td>
+									<td><input type="text" name="street" value="${street}"
+										placeholder="Enter street" /></td>
 								</tr>
 								<tr>
-									<td><label for="province">Province:<i class="error" id="provinceErr">*</i></label></td>
-									<td><input type="text" name="province" value="${province}" placeholder="Enter province" /></td>
+									<td><label for="province">Province:<i
+											class="error" id="provinceErr">*</i></label></td>
+									<td><input type="text" name="province" value="${province}"
+										placeholder="Enter province" /></td>
 								</tr>
 								<tr>
-									<td><label for="country">Country:<i class="error" id="countryErr">*</i></label></td>
-									<td><input type="text" name="country" value="${country}" placeholder="Enter country" /></td>
+									<td><label for="country">Country:<i class="error"
+											id="countryErr">*</i></label></td>
+									<td><input type="text" name="country" value="${country}"
+										placeholder="Enter country" /></td>
 								</tr>
 								<tr>
-									<td><label for="zip">Zip Code:<i class="error" id="zipErr">*</i></label></td>
-									<td><input type="text" name="zip" value="${zip}" placeholder="Enter Zip Code" /></td>
+									<td><label for="zip">Zip Code:<i class="error"
+											id="zipErr">*</i></label></td>
+									<td><input type="text" name="zip" value="${zip}"
+										placeholder="Enter Zip Code" /></td>
 								</tr>
 								<tr>
-									<td><label for="phone">Phone Number:<i class="error" id="phoneErr">*</i></label></td>
-									<td><input type="text" name="phone" value="${phone}" placeholder="Enter phone number" /></td>
+									<td><label for="phone">Phone Number:<i
+											class="error" id="phoneErr">*</i></label></td>
+									<td><input type="text" name="phone" value="${phone}"
+										placeholder="Enter phone number" /></td>
 								</tr>
 							</TABLE>
 						</div>
-						<h3>Billing Information: <span style="font-weight:normal; font-size:14px;">
-						<c:choose>
-							<c:when test="${empty sameAddress}">
-								<input type="checkbox" name="sameAddress" checked="checked" onchange="billingCheckboxDidChange(this);" />
-							</c:when>
-							<c:otherwise>
-								<input type="checkbox" name="sameAddress" onchange="billingCheckboxDidChange(this);" />
-							</c:otherwise>
-						</c:choose>
-						Same as Shipping</span></h3>
-						<div id="billingDiv" style="display:none;">
+						<h3>
+							Billing Information: <span
+								style="font-weight: normal; font-size: 14px;"> <c:choose>
+									<c:when test="${empty sameAddress}">
+										<input type="checkbox" name="sameAddress" checked="checked"
+											onchange="billingCheckboxDidChange(this);" />
+									</c:when>
+									<c:otherwise>
+										<input type="checkbox" name="sameAddress"
+											onchange="billingCheckboxDidChange(this);" />
+									</c:otherwise>
+								</c:choose> Same as Shipping
+							</span>
+						</h3>
+						<div id="billingDiv" style="display: none;">
 							<TABLE>
 								<tr>
-									<td><label for="bstreet">Street:<i class="error" id="bstreetErr">*</i></label></td>
-									<td><input type="text" name="bstreet" value="${bstreet}" placeholder="Enter street" /></td>
+									<td><label for="bstreet">Street:<i class="error"
+											id="bstreetErr">*</i></label></td>
+									<td><input type="text" name="bstreet" value="${bstreet}"
+										placeholder="Enter street" /></td>
 								</tr>
 								<tr>
-									<td><label for="bprovince">Province:<i class="error" id="bprovinceErr">*</i></label></td>
-									<td><input type="text" name="bprovince" value="${bprovince}" placeholder="Enter province" /></td>
+									<td><label for="bprovince">Province:<i
+											class="error" id="bprovinceErr">*</i></label></td>
+									<td><input type="text" name="bprovince"
+										value="${bprovince}" placeholder="Enter province" /></td>
 								</tr>
 								<tr>
-									<td><label for="bcountry">Country:<i class="error" id="bcountryErr">*</i></label></td>
-									<td><input type="text" name="bcountry" value="${bcountry}" placeholder="Enter country" /></td>
+									<td><label for="bcountry">Country:<i class="error"
+											id="bcountryErr">*</i></label></td>
+									<td><input type="text" name="bcountry" value="${bcountry}"
+										placeholder="Enter country" /></td>
 								</tr>
 								<tr>
-									<td><label for="bzip">Zip Code:<i class="error" id="bzipErr">*</i></label></td>
-									<td><input type="text" name="bzip" value="${bzip}" placeholder="Enter Zip Code" /></td>
+									<td><label for="bzip">Zip Code:<i class="error"
+											id="bzipErr">*</i></label></td>
+									<td><input type="text" name="bzip" value="${bzip}"
+										placeholder="Enter Zip Code" /></td>
 								</tr>
 							</TABLE>
 						</div>
@@ -107,14 +126,16 @@
 											class="error" id="firstnameErr">*</i>
 									</label></td>
 									<td><input type="text" name="firstname"
-										placeholder="First name" value="${firstname ? firstname : user.firstname}" /></td>
+										placeholder="First name"
+										value="${firstname ? firstname : user.firstname}" /></td>
 								</tr>
 								<tr>
 									<td><label for="lastname">Last name:<i
 											class="error" id="lastnameErr">*</i>
 									</label></td>
 									<td><input type="text" name="lastname"
-										placeholder="Last name" value="${lastname ? lastname : user.lastname}" /></td>
+										placeholder="Last name"
+										value="${lastname ? lastname : user.lastname}" /></td>
 								</tr>
 								<tr>
 									<td><label for="cardnumber">Credit Card:<i
@@ -124,11 +145,10 @@
 										placeholder="Credit Card" /></td>
 								</tr>
 								<tr>
-									<td><label>Expiration date:<i class="error" id="dateErr">*</i></label></td>
-									<td>
-										<input type="text" name="month" placeholder="MM" />
-										<input type="text" name="year" placeholder="YYYY" />
-									</td>
+									<td><label>Expiration date:<i class="error"
+											id="dateErr">*</i></label></td>
+									<td><input type="text" name="month" placeholder="MM" /> <input
+										type="text" name="year" placeholder="YYYY" /></td>
 								</tr>
 								<tr>
 									<td><label for="cvc">CVC/CVV:<i class="error"
@@ -141,7 +161,7 @@
 						<input type="submit" name="submit" value="Confirm Order" />
 					</fieldset>
 				</form>
-			</c:otherwise>
+			</c:when>
 		</c:choose>
 	</div>
 </body>

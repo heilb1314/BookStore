@@ -32,7 +32,7 @@ title VARCHAR(60) NOT NULL,
 price INT NOT NULL,
 category ENUM('Science','Fiction','Engineering') NOT NULL,
 description VARCHAR(255) NOT NULL,
-rating INT NOT NULL DEFAULT 0,
+rating FLOAT NOT NULL DEFAULT 0.0,
 PRIMARY KEY(bid)
 );
 
@@ -40,6 +40,7 @@ PRIMARY KEY(bid)
 INSERT INTO Book (bid, title, price, category, description) VALUES ('b001', 'Little Prince', 20, 'Fiction', 'A fiction story about a little prince.');
 INSERT INTO Book (bid, title, price, category, description) VALUES ('b002','Physics', 201, 'Science', 'Introduction to Physics. You will learn the basic Physics knowledge');
 INSERT INTO Book (bid, title, price, category, description) VALUES ('b003','Mechanics' ,100,'Engineering', 'Introduction to Mechanics.');
+INSERT INTO Book (bid, title, price, category, description) VALUES ('b004','Chemistry' ,80,'Science', 'Learn Chemistry from beginning.');
 
 /* Address
 * id: address id

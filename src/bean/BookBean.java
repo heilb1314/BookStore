@@ -3,6 +3,8 @@ package bean;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -10,8 +12,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="book")
-@XmlType(propOrder={"bid","title","price","category","description"})
-public class BookBean {
+@XmlType(propOrder={"bid","title","price","category","description","rating"})
+public class BookBean extends JsonBean {
 	
 	@XmlType
 	@XmlEnum(String.class)
@@ -36,7 +38,7 @@ public class BookBean {
 	private String bid;
 	private String title;
 	private int price;
-	private int rating;
+	private float rating;
 	private BookBean.Category category;
 	private String description;
 	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
@@ -45,13 +47,13 @@ public class BookBean {
 		this("","",0,null,0,"");
 	}
 	
-	public BookBean(String bid, String title, int price, Category category, int rating, String description) {
+	public BookBean(String bid, String title, int price, Category category, float rating, String description) {
 		super();
 		this.bid = bid;
 		this.title = title;
 		this.price = price;
 		this.category = category;
-		this.rating = 0;
+		this.rating = rating;
 		this.description = description;
 	}
 
@@ -109,26 +111,27 @@ public class BookBean {
 		this.description = description;
 	}
 
-	public int getRating() {
+	public float getRating() {
 		return rating;
 	}
 
-	public void setRating(int rating) {
+	public void setRating(float rating) {
 		this.rating = rating;
+	}
+	
+	public JsonObjectBuilder toJsonObjectBuilder() {
+		return Json.createObjectBuilder()
+				.add("bid", this.getBid())
+				.add("title", this.getTitle())
+				.add("price", this.getPrice())
+				.add("rating", this.getRating())
+				.add("category", this.getCategory().toString())
+				.add("description", this.getDescription());
 	}
 	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((bid == null) ? 0 : bid.hashCode());
-		result = prime * result + ((category == null) ? 0 : category.hashCode());
-		result = prime * result + ((poItems == null) ? 0 : poItems.hashCode());
-		result = prime * result + price;
-		result = prime * result + rating;
-		result = prime * result + ((title == null) ? 0 : title.hashCode());
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		return result;
+		return bid.hashCode();
 	}
 
 
@@ -141,31 +144,14 @@ public class BookBean {
 		if (getClass() != obj.getClass())
 			return false;
 		BookBean other = (BookBean) obj;
-		if (bid == null) {
-			if (other.bid != null)
-				return false;
-		} else if (!bid.equals(other.bid))
-			return false;
-		if (category != other.category)
-			return false;
-		if (poItems == null) {
-			if (other.poItems != null)
-				return false;
-		} else if (!poItems.equals(other.poItems))
-			return false;
-		if (price != other.price)
-			return false;
-		if (title == null) {
-			if (other.title != null)
-				return false;
-		} else if (!title.equals(other.title))
-			return false;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		return true;
+		return this.getBid().equals(other.getBid());
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Book: bid=%s, title=%s, price=%d, description=%s, category=%s, rating=%.1f", this.getBid(), this.getTitle(), this.getPrice(), this.getDescription(), this.getCategory().toString(), this.getRating());
+	}
+	
+	
 
 }

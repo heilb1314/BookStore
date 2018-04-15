@@ -4,18 +4,62 @@ function searchBook(form, path) {
 	window.location.href = searchPath;
 }
 
-function openModal(title, category, price, description) {
+function openModal(bid, title, category, price, description) {
 	el = document.getElementById("book-detail-div");
 	el.style.visibility = "visible";
+	document.getElementById("book-detail-bid").value = bid;
 	document.getElementById("book-detail-title").innerText = title;
 	document.getElementById("book-detail-category").innerText = category;
 	document.getElementById("book-detail-price").innerText = "$"+parseFloat(price).toFixed(2);
 	document.getElementById("book-detail-description").innerText = description;
+	fetchReviews(bid);
 }
 
 function closeModal() {
 	el = document.getElementById("book-detail-div");
 	el.style.visibility = "hidden";
+	document.getElementById("book-detail-review-table").style.display = "none";
+	document.getElementById("book-detail-scrollable-div").scrollTop = 0;
+}
+
+function fetchAjaxRequest(method, url, formData, cb) {
+	var request = null;
+	if (window.XMLHttpRequest) {
+		request = new XMLHttpRequest();
+	} else {
+		request = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	request.open(method, url, true);
+	request.onreadystatechange = function() {
+		if(request.readyState == 4 && request.status == 200) {
+			console.log(request);
+			var res = JSON.parse(request.responseText);
+			cb(res);
+		}
+	};
+	request.send(formData);
+}
+
+function fetchReviews(bid) {
+	var formData = new FormData();
+	formData.append("bid",bid);
+	fetchAjaxRequest("POST", "/bookStore/Start/Ajax/Review", formData, function(res){
+		if(res.code===1){
+			var result = res.result;
+			var resultTable = document.getElementById("book-detail-review-tbody");
+			// remove previous results
+			while (resultTable.firstChild) {
+				resultTable.removeChild(resultTable.firstChild);
+			}
+			result.forEach(function(item) {
+				var row = constructRowOfBookReviews(item);
+				resultTable.appendChild(row);
+			});
+			document.getElementById("book-detail-review-table").style.display = "inline";
+		} else {
+			alert(res.error);
+		}
+	});
 }
 
 function validateShoppingCartItem(form) {
@@ -148,6 +192,81 @@ function validatePurchase(form) {
 	
 }
 
-//function quantityDidChange(priceId, quantity, unitPrice) {
-//	document.getElementById(priceId).innerText = "Price: $"+(parseInt(quantity)*parseFloat(unitPrice)).toFixed(2);
-//}
+function validateRating(form) {
+	var rating = form.elements.rating.value;
+	var review = form.elements.review.value;
+	if(rating==null || rating=="") {
+		alert("Please select a rating!"); 
+		return false;
+	} else if (typeof rating === "string" && rating.match("^[1-5]$") == null) {
+		alert("Invalid rating! Must be 1 - 5!");
+		return false;
+	} else if (review==null || review=="") {
+		alert("Please write a review!");
+		return false;
+	} else if (review.length>255) {
+		alert("Maximum of review is 255 characters!");
+		return false;
+	}
+	return true;
+}
+
+function fetchTop10Purchases(){
+	var request = null;
+	if (window.XMLHttpRequest) {
+		request = new XMLHttpRequest();
+	} else {
+		request = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	request.open("POST", "/bookStore/Start/Ajax/Analytics", true);
+	request.onreadystatechange = function() {
+		if(request.readyState == 4 && request.status == 200) {
+			var res = JSON.parse(request.responseText);
+			if(res.code===1){
+				var result = res.result;
+				var resultTable = document.getElementById("popularBooksTableBody");
+				// remove previous results
+				while (resultTable.firstChild) {
+					resultTable.removeChild(resultTable.firstChild);
+				}
+				result.forEach(function(item){
+					var row = constructRowOfPopularBooks(item);
+					resultTable.appendChild(row);
+				});
+				document.getElementById("popularBooksTable").style.display = "inline";					
+			}else{
+				alert(res.error);
+			}
+		}
+		
+	};
+	request.send(new FormData());
+}
+
+function constructRowOfPopularBooks(item){
+	var keys = ["bid","title","category"]; 
+	var row = document.createElement("tr");
+	keys.forEach(function(key){
+	    var col = document.createElement("td");
+	    col.textContent = item.book[key];
+	    row.appendChild(col);
+	});
+	var price = document.createElement("td");
+	price.textContent = "$" + parseInt(item.book.price).toFixed(2);
+	var countTd = document.createElement("td");
+	countTd.textContent = item.count;
+	row.appendChild(price);
+	row.appendChild(countTd);
+	return row;
+}
+
+function constructRowOfBookReviews(item){
+	var keys = ["rating","review"]; 
+	var row = document.createElement("tr");
+	keys.forEach(function(key){
+	    var col = document.createElement("td");
+	    col.textContent = item[key];
+	    row.appendChild(col);
+	});
+	return row;
+}

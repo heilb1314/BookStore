@@ -25,6 +25,7 @@ public class UserModel {
 		HttpSession session = request.getSession();
 		try {
 			UserBean user = (UserBean) session.getAttribute("user");
+			if(user==null) return null;
 			if(!user.equals(this.user)) {
 				this.user = user;
 			}
@@ -33,6 +34,21 @@ public class UserModel {
 			e.printStackTrace();
 			this.user = null;
 			return null;
+		}
+	}
+	
+	/**
+	 * If current login user is administor or not
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean isAdmin(HttpServletRequest request) throws Exception {
+		if(this.loggedIn(request)) {
+			UserBean user = this.getUser(request);
+			return user.getUserType() == UserType.ADMIN;
+		} else {
+			throw new Exception("Please login first!");
 		}
 	}
 	

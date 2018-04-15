@@ -31,44 +31,9 @@
 		<div class="flex-container">
 			<c:forEach var="item" items="${books}">
 				<c:set var="book" value="${item.book}" />
-				<div class="book card">
-					<form action="" method="POST"
-						onsubmit="return validateShoppingCartItem(this);">
-						<input type="text" class="hidden" name="bid" value="${book.bid}" />
-						<h5 class="card-title">Title: ${book.title}</h5>
-						<p class="card-subtitle">Category: ${book.category}</p>
-						<p class="card-price">
-							Price:
-							<f:formatNumber type="currency">${book.price}</f:formatNumber>
-						</p>
-						<p class="card-quantity">
-							Quantity: <input id="${book.bid}qty" name="quantity"
-								type="number" min="1" max="50" value="${item.quantity}" step="1" />
-						</p>
-						<p class="card-price">
-							Sub-total:
-							<f:formatNumber type="currency">${item.price}</f:formatNumber>
-						</p>
-						<button class="btn"
-							onclick='openModal("${book.title}","${book.category}","${book.price}","${book.description}"); return false;'>View</button>
-						<input type="submit" name="submit" value="Update" /> <input
-							type="submit" name="submit" value="Remove" />
-					</form>
-				</div>
+				<jsp:directive.include file="BookCard.jspx" />
 			</c:forEach>
-			<div id="book-detail-div" style="background-color: rgba(0, 0, 0, 0.5)">
-				<div>
-					<div>
-						<h4 id="book-detail-title">title</h4>
-						<p id="book-detail-category">category</p>
-						<p id="book-detail-price">price</p>
-						<p id="book-detail-description">description</p>
-					</div>
-					<div>
-						Click here to [<a href='#' onclick='closeModal()'>close</a>]
-					</div>
-				</div>
-			</div>
+			<jsp:include page="BookDetail.jspx" />
 		</div>
 		<c:if test="${not empty sessionScope.cart}">
 			<form action="${pageContext.request.contextPath}/Start/Payment" method="POST">

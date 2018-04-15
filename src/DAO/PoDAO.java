@@ -3,15 +3,19 @@ package DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import bean.AddressBean;
 import bean.BookBean;
+import bean.BookReviewBean;
 import bean.PoBean;
 import bean.PoItemBean;
 import bean.ShoppingCartItemBean;
+import javafx.util.Pair;
+import listener.NewPurchase;
 
 public class PoDAO extends ObjectDAO {
 
@@ -42,7 +46,56 @@ public class PoDAO extends ObjectDAO {
 			UserDAO userDAO = new UserDAO();
 			po = new PoBean(id, userDAO.getUserById(uid), status, addressDAO.getAddressById(addressId));
 		}
+		r.close();
+		p.close();
+		con.close();
 		return po;
+	}
+	
+	/**
+	 * Get a list of book reviews of a given book id
+	 * @param bid
+	 * @return
+	 * @throws Exception
+	 */
+	public List<BookReviewBean> getBookReviewById(String bid) throws Exception {
+		List<BookReviewBean> reviews = new ArrayList<BookReviewBean>();
+		String query = "SELECT poi.rating, poi.review FROM POItem poi INNER JOIN PO p ON poi.id=p.id AND p.status='ORDERED' INNER JOIN book b ON poi.bid=b.bid WHERE poi.bid=? AND poi.rating>0 ORDER BY poi.id DESC";
+		Connection con = this.ds.getConnection();
+		PreparedStatement p = con.prepareStatement(query);
+		p.setString(1, bid);
+		ResultSet r = p.executeQuery();
+		while(r.next()) {
+			BookReviewBean review = new BookReviewBean(r.getInt("rating"), r.getString("review"));
+			reviews.add(review);
+		}
+		return reviews;
+	}
+	
+	/**
+	 * Get the purchase id of the available purchased item with given user id and book id 
+	 * (user can rate a book only when he/she made a successful purchase on that book 
+	 * and have never rated on that book for that specific purchase yet)
+	 * @param uid
+	 * @param bid
+	 * @return
+	 * @throws Exception
+	 */
+	public int getAvailableRatingPurchaseItemId(int uid, String bid) throws Exception {
+		String query = "SELECT poi.id AS pid FROM POItem poi INNER JOIN PO p ON poi.id=p.id WHERE p.uid=? AND p.status='ORDERED' AND poi.bid=? AND poi.rating=0 LIMIT 1";
+		Connection con = this.ds.getConnection();
+		PreparedStatement p = con.prepareStatement(query);
+		p.setInt(1, uid);
+		p.setString(2, bid);
+		ResultSet r = p.executeQuery();
+		int pid = 0;
+		if(r.next()) {
+			pid = r.getInt("pid");
+		}
+		r.close();
+		p.close();
+		con.close();
+		return pid;
 	}
 	
 	/**
@@ -60,24 +113,18 @@ public class PoDAO extends ObjectDAO {
 		p.setInt(2, addressId);
 		p.setInt(3, uid);
 		int r = p.executeUpdate();
-		if(r == 0) {
+		try {
+			if(r==0) throw new Exception("Fail to create address. no rows affected.");
+			ResultSet generatedKeys = p.getGeneratedKeys();
+			if(!generatedKeys.next()) throw new Exception("Creating address failed, no ID obtained.");
+			int id = generatedKeys.getInt(1);
 			p.close();
 			con.close();
-			throw new Exception("Fail to create address. no rows affected.");
-		} else {
-			try (ResultSet generatedKeys = p.getGeneratedKeys()) {
-	            if (generatedKeys.next()) {
-	            		int id = generatedKeys.getInt(1);
-	            		p.close();
-	            		con.close();
-	            		return id;
-	            }
-	            else {
-		            	p.close();
-		        		con.close();
-	                throw new Exception("Creating address failed, no ID obtained.");
-	            }
-	        }
+			return id;
+		} catch(Exception e) {
+			p.close();
+			con.close();
+			throw e;
 		}
 	}
 	
@@ -163,22 +210,48 @@ public class PoDAO extends ObjectDAO {
 	
 	/**
 	 * Rate a Purchase order item ( give it rating and review )
-	 * @param item
+	 * @param pid
+	 * @param bid
 	 * @param rating
 	 * @param review
 	 * @throws Exception
 	 */
-	public void ratePoItem(PoItemBean item, int rating, String review) throws Exception {
+	public void ratePoItem(int pid, String bid, int rating, String review) throws Exception {
 		String query = "UPDATE POItem SET rating = ?, review = ? WHERE id = ? and bid = ?";
 		Connection con = this.ds.getConnection();
 		PreparedStatement p = con.prepareStatement(query);
 		p.setInt(1, rating);
 		p.setString(2, review);
-		p.setInt(3, item.getPo().getId());
-		p.setString(4, item.getBook().getBid());
+		p.setInt(3, pid);
+		p.setString(4, bid);
 		p.executeUpdate();
 		p.close();
 		con.close();
+	}
+	
+	/**
+	 * Get purchases stats (List of User with their total spent per zip code)
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Pair<Integer,String>> getPurchaseStats() throws Exception {
+		String query = "SELECT p.uid, a.zip, SUM(pi.price) AS total_spent FROM poitem pi INNER JOIN po p ON pi.id=p.id INNER JOIN address a ON p.address=a.id WHERE p.status='ORDERED' GROUP BY p.uid, a.zip";
+		Connection con = this.ds.getConnection();
+		PreparedStatement p = con.prepareStatement(query);
+		ResultSet r = p.executeQuery();
+		List<Pair<Integer,String>> results = new ArrayList<>();
+		while(r.next()) {
+			String uid = r.getString("uid");
+			String zip = r.getString("zip");
+			int totalSpent = r.getInt("total_spent");
+			Pair<Integer,String> data = new Pair<Integer,String>(totalSpent,zip);
+			results.add(data);
+		}
+		r.close();
+		p.close();
+		con.close();
+		
+		return results;
 	}
 	
 	

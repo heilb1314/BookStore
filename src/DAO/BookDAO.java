@@ -16,6 +16,12 @@ public class BookDAO extends ObjectDAO {
 		
 	}
 	
+	/**
+	 * Get a book by id
+	 * @param bid
+	 * @return
+	 * @throws Exception
+	 */
 	public BookBean getBookById(String bid) throws Exception {
 		String query = "SELECT * FROM book WHERE bid = ?";
 		Connection con = this.ds.getConnection();
@@ -34,6 +40,12 @@ public class BookDAO extends ObjectDAO {
 		return book;
 	}
 	
+	/**
+	 * Get a list of books by title query
+	 * @param title
+	 * @return
+	 * @throws Exception
+	 */
 	public List<BookBean> getListOfBooksByTitle(String title) throws Exception {
 		String query = "SELECT * FROM book WHERE title LIKE ? ORDER BY title";
 		Connection con = this.ds.getConnection();
@@ -47,6 +59,12 @@ public class BookDAO extends ObjectDAO {
 		return rv;
 	}
 
+	/**
+	 * Get a list of books by category
+	 * @param category
+	 * @return
+	 * @throws Exception
+	 */
 	public List<BookBean> getListOfBooksByCategory(BookBean.Category category) throws Exception {
 		String query = "";
 		if(category==null) {
@@ -69,6 +87,40 @@ public class BookDAO extends ObjectDAO {
 		return rv;		
 	}
 	
+	/**
+	 * Parse book from ResultSet
+	 * @param r
+	 * @return
+	 * @throws Exception
+	 */
+	public BookBean parseBookBean(ResultSet r) throws Exception {
+		String bid = r.getString("BID");
+		String title = r.getString("TITLE");
+		int price = r.getInt("PRICE");
+		float rating = r.getFloat("rating");
+		BookBean.Category category = BookBean.Category.getCategory(r.getString("CATEGORY"));
+		String description = r.getString("DESCRIPTION");
+		BookBean book = new BookBean(bid, title, price, category, rating, description);
+		return book;
+	}
+	
+	/**
+	 * Recalculate and update a book rating
+	 * @param bid
+	 * @throws Exception
+	 */
+	public void updateBookRating(String bid) throws Exception {
+		BookBean book = this.getBookById(bid);
+		if(book==null) throw new Exception("No such book!");
+		String query = "UPDATE book b SET b.rating=(SELECT ROUND(AVG(poi.rating),1) FROM POItem poi INNER JOIN PO p ON poi.id=p.id WHERE poi.bid=? AND poi.rating>0 AND p.status='ORDERED') WHERE bid=?";
+		Connection con = this.ds.getConnection();
+		PreparedStatement p = con.prepareStatement(query);
+		p.setString(1, bid);
+		p.setString(2, bid);
+		p.executeUpdate();
+		p.close();
+		con.close();
+	}
 	
 	private List<BookBean> parseResultSetToList(ResultSet r) throws Exception {
 		List<BookBean> rv = new ArrayList<BookBean>();
@@ -79,15 +131,6 @@ public class BookDAO extends ObjectDAO {
 		return rv;
 	}
 	
-	private BookBean parseBookBean(ResultSet r) throws Exception {
-		String bid = r.getString("BID");
-		String title = r.getString("TITLE");
-		int price = r.getInt("PRICE");
-		int rating = r.getInt("rating");
-		BookBean.Category category = BookBean.Category.getCategory(r.getString("CATEGORY"));
-		String description = r.getString("DESCRIPTION");
-		BookBean book = new BookBean(bid, title, price, category, rating, description);
-		return book;
-	}
+	
 	
 }

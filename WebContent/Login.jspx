@@ -22,41 +22,32 @@
 </head>
 <body>
 	<jsp:include page="NavBar.jspx" />
+	<jsp:directive.include file="Messager.jspx" />
 	<div class="mc-body">
-		<c:choose>
-			<c:when test="${empty successMessage}">
-				<c:if test="${not empty errorMessage}">
-					<h4 class="error">${errorMessage}</h4>
-				</c:if>
-				<form action="" method="POST"
-					onsubmit="return validateRegister(this);">
-					<fieldset>
-						<legend>Login</legend>
-						<div id="errorDiv">
-							<label class="error"></label>
-						</div>
-						<TABLE>
-							<tr>
-								<td><label for="username">Username:<i class="error"
-										id="usernameErr">*</i></label></td>
-								<td><input type="text" name="username" value="${username}"
-									placeholder="Enter username" /></td>
-							</tr>
-							<tr>
-								<td><label for="password">Password:<i class="error"
-										id="passwordErr">*</i></label></td>
-								<td><input type="password" name="password"
-									placeholder="Enter password" /></td>
-							</tr>
-						</TABLE>
-						<input type="submit" name="submit" value="Login" />
-					</fieldset>
-				</form>
-			</c:when>
-			<c:otherwise>
-				<h3>${successMessage}</h3>
-			</c:otherwise>
-		</c:choose>
+		<form action="" method="POST"
+			onsubmit="return validateRegister(this);">
+			<fieldset>
+				<legend>Login</legend>
+				<div id="errorDiv">
+					<label class="error"></label>
+				</div>
+				<TABLE>
+					<tr>
+						<td><label for="username">Username:<i class="error"
+								id="usernameErr">*</i></label></td>
+						<td><input type="text" name="username" value="${username}"
+							placeholder="Enter username" /></td>
+					</tr>
+					<tr>
+						<td><label for="password">Password:<i class="error"
+								id="passwordErr">*</i></label></td>
+						<td><input type="password" name="password"
+							placeholder="Enter password" /></td>
+					</tr>
+				</TABLE>
+				<input type="submit" name="submit" value="Login" />
+			</fieldset>
+		</form>
 
 	</div>
 </body>
