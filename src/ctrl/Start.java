@@ -28,6 +28,7 @@ import javafx.util.Pair;
 import listener.NewPurchase;
 import model.BookStoreModel;
 import model.BookStoreUtil;
+import model.UserModel;
 
 /**
  * Servlet implementation class Start
@@ -46,7 +47,6 @@ public class Start extends HttpServlet {
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        this.getModel();
     }
 
     /**
@@ -80,10 +80,10 @@ public class Start extends HttpServlet {
         } else if (path.equals("/Start/Login")) {
             this.handleGetLoginPageRequest(request, response);
         } else if (path.equals("/Start/Logout")) {
-            this.getModel().getUserModel().logout(request);
+            this.getModel(request).getUserModel().logout(request);
             response.sendRedirect(contextPath + "/Start");
         } else if (path.equals("/Start/Payment")) {
-            if (!this.getModel().getUserModel().loggedIn(request)) {
+            if (!this.getModel(request).getUserModel().loggedIn(request)) {
                 request.setAttribute("errorMessage", "Please Login first!");
             }
             request.getRequestDispatcher("/Payment.jspx").forward(request, response);
@@ -156,13 +156,17 @@ public class Start extends HttpServlet {
      *
      * @return
      */
-    private BookStoreModel getModel() {
-        BookStoreModel model = (BookStoreModel) this.getServletContext().getAttribute("model");
+    private BookStoreModel getModel(HttpServletRequest request) {
+        BookStoreModel model = (BookStoreModel) request.getSession().getAttribute("model");
         if (model == null) {
             model = new BookStoreModel();
-            this.getServletContext().setAttribute("model", model);
+            request.getSession().setAttribute("model", model);
         }
         return model;
+    }
+
+    private void setModel(HttpServletRequest request, BookStoreModel model){
+        request.getSession().setAttribute("model", model);
     }
 
     /**
@@ -215,10 +219,10 @@ public class Start extends HttpServlet {
         List<BookBean> books = null;
         try {
             if (bookQueryTitle != null) {
-                books = this.getModel().retrieveBooksByTitle(bookQueryTitle);
+                books = this.getModel(request).retrieveBooksByTitle(bookQueryTitle);
             } else {
                 BookBean.Category c = BookBean.Category.getCategory(bookQueryCategory);
-                books = this.getModel().retrieveBooksByCategory(c);
+                books = this.getModel(request).retrieveBooksByCategory(c);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -238,7 +242,7 @@ public class Start extends HttpServlet {
     public void handleGetShoppingCartPageRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<ShoppingCartItemBean> books = new ArrayList<ShoppingCartItemBean>(
-                this.getModel().getCartModel().getMyCart(request).values());
+                this.getModel(request).getCartModel().getMyCart(request).values());
         request.setAttribute("books", books);
         request.getRequestDispatcher("/ShoppingCart.jspx").forward(request, response);
     }
@@ -280,7 +284,7 @@ public class Start extends HttpServlet {
     private void handleGetAnalyticsPageRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            if (!this.getModel().getUserModel().isAdmin(request))
+            if (!this.getModel(request).getUserModel().isAdmin(request))
                 throw new Exception("Permission Denied!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -303,7 +307,7 @@ public class Start extends HttpServlet {
         String rating = request.getParameter("rating");
         String review = request.getParameter("review");
         try {
-            this.getModel().rateBook(bid, rating, review, request);
+            this.getModel(request).rateBook(bid, rating, review, request);
             this.successMessage = "Review successfully submitted!";
         } catch (Exception e) {
             this.errorMessage = e.getMessage();
@@ -327,7 +331,7 @@ public class Start extends HttpServlet {
             System.out.println("handling Ajax request!");
             if (routine.equals("Analytics")) {
                 // get popular books list for ajax request
-                if (!this.getModel().getUserModel().isAdmin(request))
+                if (!this.getModel(request).getUserModel().isAdmin(request))
                     throw new Exception("Permission Denied!");
                 @SuppressWarnings("unchecked")
                 List<NewPurchase.Book> popularBooks = (List<NewPurchase.Book>) request.getServletContext()
@@ -343,7 +347,7 @@ public class Start extends HttpServlet {
                 System.out.println("receive book review fetch request bid=" + bid);
                 if (bid == null || bid.isEmpty())
                     throw new Exception("Must provide Book id.");
-                List<BookReviewBean> reviews = this.getModel().retrieveBookReviewsByBookId(bid);
+                List<BookReviewBean> reviews = this.getModel(request).retrieveBookReviewsByBookId(bid);
                 System.out.println("review: " + reviews);
                 json = BookStoreUtil.constructAjaxResponse(reviews);
                 System.out.println(json.toString());
@@ -375,7 +379,7 @@ public class Start extends HttpServlet {
             String bid = request.getParameter("bid");
             String quantityStr = request.getParameter("quantity");
             try {
-                this.getModel().getCartModel().addToCart(bid, quantityStr, request);
+                this.getModel(request).getCartModel().addToCart(bid, quantityStr, request);
             } catch (Exception e) {
                 e.printStackTrace();
                 this.errorMessage = e.getMessage();
@@ -403,7 +407,7 @@ public class Start extends HttpServlet {
             // Remove a book from cart
             String bid = request.getParameter("bid");
             try {
-                this.getModel().getCartModel().removeFromCart(bid, request);
+                this.getModel(request).getCartModel().removeFromCart(bid, request);
                 this.successMessage = "Item successfully removed!";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -415,7 +419,7 @@ public class Start extends HttpServlet {
             String bid = request.getParameter("bid");
             String quantityStr = request.getParameter("quantity");
             try {
-                this.getModel().getCartModel().updateCartItemQuantity(bid, quantityStr, request);
+                this.getModel(request).getCartModel().updateCartItemQuantity(bid, quantityStr, request);
                 this.successMessage = "Item successfully updated!";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -445,7 +449,7 @@ public class Start extends HttpServlet {
         String password = request.getParameter("password");
         String verifiedPassword = request.getParameter("verifiedPassword");
         try {
-            this.getModel().getUserModel().registerUser(username, firstname, lastname, password, verifiedPassword,
+            this.getModel(request).getUserModel().registerUser(username, firstname, lastname, password, verifiedPassword,
                     request);
             this.successMessage = "User successfully registered!";
         } catch (Exception e) {
@@ -474,7 +478,7 @@ public class Start extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         try {
-            this.getModel().getUserModel().loginUser(username, password, request);
+            this.getModel(request).getUserModel().loginUser(username, password, request);
             this.successMessage = "Welcome back " + username;
             response.sendRedirect("/bookStore/Start");
         } catch (Exception e) {
@@ -523,13 +527,14 @@ public class Start extends HttpServlet {
             String cvc = request.getParameter("cvc");
 
             try {
-                this.getModel().processPo(street, province, country, zip, phone, bstreet, bprovince, bcountry, bzip,
+                BookStoreModel model = this.getModel(request);
+                model.processPo(street, province, country, zip, phone, bstreet, bprovince, bcountry, bzip,
                         firstname, lastname, cardNumber, month, year, cvc, request);
                 this.successMessage = "Order Successfully Completed!";
-                List<VisitEventBean> visitEvents = this.getModel().retrieveVisitEventsFromShoppingCart(request);
-                this.getModel().addVisitEvents(visitEvents);
+                List<VisitEventBean> visitEvents = model.retrieveVisitEventsFromShoppingCart(request);
+                model.addVisitEvents(visitEvents);
                 this.requestAttributes.put("newPurchase", visitEvents);
-                this.getModel().getCartModel().updateCart(new HashMap<String, ShoppingCartItemBean>(), request);
+                model.getCartModel().updateCart(new HashMap<String, ShoppingCartItemBean>(), request);
             } catch (Exception e) {
                 e.printStackTrace();
                 this.savePurchaseFormInfo(street, province, country, zip, phone, sameAddress, bstreet, bprovince,
@@ -557,7 +562,7 @@ public class Start extends HttpServlet {
                                          HttpServletResponse response) throws ServletException, IOException {
         if (submit.equals("Get Statistics")) {
             try {
-                List<Pair<Integer, String>> results = this.getModel().retrieveUserPurchaseStatistics(request);
+                List<Pair<Integer, String>> results = this.getModel(request).retrieveUserPurchaseStatistics(request);
                 request.getSession().setAttribute("stats", results);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -18,6 +18,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"id", "lname", "fname", "status", "address", "items"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PoBean {
+
+    public PoBean() {
+    }
+
     @XmlType
     @XmlEnum(String.class)
     public static enum Status {

@@ -10,7 +10,7 @@ import java.security.SecureRandom;
 
 import bean.AddressBean;
 import bean.UserBean;
-import bean.UserBean.UserType;
+import bean.UserType;
 
 public class UserDAO extends ObjectDAO {
 
@@ -131,7 +131,6 @@ public class UserDAO extends ObjectDAO {
         this.validatePassword(password);
         this.validateFirstname(fname);
         this.validateLastname(lname);
-        this.validateUserType(userType);
 
         String query = "SELECT * FROM User WHERE username=?";
         String query2 = "INSERT INTO User (username, password, lname, fname, user_type) VALUES (?,?,?,?,?)";
@@ -189,10 +188,6 @@ public class UserDAO extends ObjectDAO {
 
     private void validateLastname(String n) throws Exception {
         this.validateName(n, "Lastname");
-    }
-
-    private void validateUserType(String type) throws Exception {
-        if (UserBean.UserType.getUserType(type.toLowerCase()) == null) throw new Exception("Invalid user type.");
     }
 
     private void validateName(String name, String label) throws Exception {

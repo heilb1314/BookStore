@@ -17,7 +17,7 @@ import bean.BookReviewBean;
 import bean.PoBean;
 import bean.ShoppingCartItemBean;
 import bean.UserBean;
-import bean.UserBean.UserType;
+import bean.UserType;
 import javafx.util.Pair;
 import bean.VisitEventBean;
 

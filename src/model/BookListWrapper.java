@@ -25,6 +25,4 @@ public class BookListWrapper {
         this.category = c;
         this.list = list;
     }
-
-
 }

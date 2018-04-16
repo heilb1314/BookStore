@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"book", "price", "quantity"})
 public class ShoppingCartItemBean {
 
+    public ShoppingCartItemBean() {}
+
     private BookBean book;
     private int quantity;
     private int price;

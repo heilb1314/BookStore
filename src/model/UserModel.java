@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import DAO.UserDAO;
 import bean.UserBean;
-import bean.UserBean.UserType;
+import bean.UserType;
 
 public class UserModel {
 

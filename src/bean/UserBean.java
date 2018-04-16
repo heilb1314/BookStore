@@ -13,32 +13,6 @@ public class UserBean {
     public UserBean() {
     }
 
-    @XmlType
-    @XmlEnum(String.class)
-    public static enum UserType {
-        @XmlEnumValue("Visitor") VISITOR,
-        @XmlEnumValue("Customer") CUSTOMER,
-        @XmlEnumValue("Partner") PARTNER,
-        @XmlEnumValue("Administrator") ADMIN;
-
-        public static UserType getUserType(String type) {
-            if (type == null) return null;
-            switch (type.toLowerCase()) {
-                case "visitor":
-                    return UserType.VISITOR;
-                case "customer":
-                    return UserType.CUSTOMER;
-                case "partner":
-                    return UserType.PARTNER;
-                case "admin":
-                    return UserType.ADMIN;
-                default:
-                    return null;
-            }
-        }
-
-    }
-
     private int id;
     private String username;
     private String firstname;
