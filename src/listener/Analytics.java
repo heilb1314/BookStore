@@ -6,35 +6,35 @@ import javax.servlet.http.HttpSessionBindingEvent;
 
 /**
  * Application Lifecycle Listener implementation class AnalyticsListener
- *
  */
 @WebListener
 public class Analytics implements HttpSessionAttributeListener {
 
     /**
-     * Default constructor. 
+     * Default constructor.
      */
     public Analytics() {
         // TODO Auto-generated constructor stub
     }
-	/**
+
+    /**
      * @see HttpSessionAttributeListener#attributeAdded(HttpSessionBindingEvent)
      */
-    public void attributeAdded(HttpSessionBindingEvent arg0)  { 
-         // TODO Auto-generated method stub
+    public void attributeAdded(HttpSessionBindingEvent arg0) {
+        // TODO Auto-generated method stub
     }
 
-	/**
+    /**
      * @see HttpSessionAttributeListener#attributeRemoved(HttpSessionBindingEvent)
      */
-    public void attributeRemoved(HttpSessionBindingEvent arg0)  { 
-         // TODO Auto-generated method stub
+    public void attributeRemoved(HttpSessionBindingEvent arg0) {
+        // TODO Auto-generated method stub
     }
 
-	/**
+    /**
      * @see HttpSessionAttributeListener#attributeReplaced(HttpSessionBindingEvent)
      */
-    public void attributeReplaced(HttpSessionBindingEvent arg0)  { 
+    public void attributeReplaced(HttpSessionBindingEvent arg0) {
 //    	String event = arg0.getName();
 //    	String title = request.getParameter("book");
 //
@@ -48,5 +48,5 @@ public class Analytics implements HttpSessionAttributeListener {
 //		this.database.createVisitEvent(bookname, author, "VIEW");
     }
 
-	
+
 }

@@ -1,6 +1,5 @@
 package DAO;
 
-public class PurchaseOrder
-{
-	
+public class PurchaseOrder {
+
 }

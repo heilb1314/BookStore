@@ -11,7 +11,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
+
 import bean.BookStats;
+
 /**
  * Servlet Filter implementation class FilterMask
  */
@@ -19,23 +21,23 @@ import bean.BookStats;
 public class FilterMask implements Filter {
 
     /**
-     * Default constructor. 
+     * Default constructor.
      */
     public FilterMask() {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see Filter#destroy()
-	 */
-	public void destroy() {
-		// TODO Auto-generated method stub
-	}
+    /**
+     * @see Filter#destroy()
+     */
+    public void destroy() {
+        // TODO Auto-generated method stub
+    }
 
-	/**
-	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    /**
+     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+     */
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 //		HttpServletRequest req = (HttpServletRequest) request;
 //		@SuppressWarnings("unchecked")
 //		Collection<BookStats> bookStats = (Collection<BookStats>) req.getSession().getAttribute("stats");
@@ -55,15 +57,15 @@ public class FilterMask implements Filter {
 //			}
 //			req.getSession().setAttribute("stats", masking);
 //		}
-		// pass the request along the filter chain
-		chain.doFilter(request, response);
-	}
+        // pass the request along the filter chain
+        chain.doFilter(request, response);
+    }
 
-	/**
-	 * @see Filter#init(FilterConfig)
-	 */
-	public void init(FilterConfig fConfig) throws ServletException {
-		// TODO Auto-generated method stub
-	}
+    /**
+     * @see Filter#init(FilterConfig)
+     */
+    public void init(FilterConfig fConfig) throws ServletException {
+        // TODO Auto-generated method stub
+    }
 
 }

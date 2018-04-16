@@ -41,7 +41,7 @@ public class VisitEventDAO extends ObjectDAO {
     public List<VisitEventBean> getListOfVisitEventsByMonthYear(int m) throws Exception {
         if (m < 1 || m > 12)
             throw new Exception("Invalid Month.");
-        String query = "SELECT b.*, v.day, v.eventtype FROM book b INNER JOIN VisitEvent v ON b.bid=v.bid WHERE day LIKE ? ORDER BY v.day ASC";
+        String query = "SELECT b.*, v.day, v.eventtype FROM Book b INNER JOIN VisitEvent v ON b.bid=v.bid WHERE day LIKE ? ORDER BY v.day ASC";
 
         try (Connection con = this.ds.getConnection();
              PreparedStatement p = con.prepareStatement(query)) {

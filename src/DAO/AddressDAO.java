@@ -21,7 +21,7 @@ public class AddressDAO extends ObjectDAO {
      * @throws Exception
      */
     public AddressBean getAddressById(int id) throws Exception {
-        String query = "SELECT * FROM address WHERE id = ?";
+        String query = "SELECT * FROM Address WHERE id = ?";
         Connection con = this.ds.getConnection();
         PreparedStatement p = con.prepareStatement(query);
         p.setInt(1, id);
@@ -54,7 +54,7 @@ public class AddressDAO extends ObjectDAO {
      * @throws Exception
      */
     public int addAddress(String street, String province, String country, String zip, String phone) throws Exception {
-        String query = "INSERT INTO address (street, province, country, zip";
+        String query = "INSERT INTO Address (street, province, country, zip";
         if (phone != null) {
             query += ", phone) VALUES (?,?,?,?,?)";
         } else {
@@ -106,7 +106,7 @@ public class AddressDAO extends ObjectDAO {
     public void updateAddress(int id, String street, String province, String country, String zip, String phone) throws Exception {
         AddressBean address = this.getAddressById(id);
         if (address == null) throw new Exception("Address Id does not exist!");
-        String query = "UPDATE address SET street=?, province=?, country=?, zip=?";
+        String query = "UPDATE Address SET street=?, province=?, country=?, zip=?";
         if (phone != null) {
             query += ", phone=?";
         }
