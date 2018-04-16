@@ -36,29 +36,25 @@ public class FilterMask implements Filter {
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		// place your code here
-		
-		
-		HttpServletRequest req = (HttpServletRequest) request;
-		@SuppressWarnings("unchecked")
-		Collection<BookStats> bookStats = (Collection<BookStats>) req.getSession().getAttribute("stats");
-		List <BookStats> masking = null;
-		
-		if (bookStats != null)
-		{
-			masking = new ArrayList<BookStats>(bookStats);
-		}
-
-		if (bookStats != null)
-		{
-			for (int i = 0; i < masking.size(); i++)
-			{ 		
-				String temp = masking.get(i).getEmail();
-				masking.get(i).setEmail(temp.substring(0, 2) + "****");
-			}
-			req.getSession().setAttribute("stats", masking);
-		}
+//		HttpServletRequest req = (HttpServletRequest) request;
+//		@SuppressWarnings("unchecked")
+//		Collection<BookStats> bookStats = (Collection<BookStats>) req.getSession().getAttribute("stats");
+//		List <BookStats> masking = null;
+//
+//		if (bookStats != null)
+//		{
+//			masking = new ArrayList<BookStats>(bookStats);
+//		}
+//
+//		if (bookStats != null)
+//		{
+//			for (int i = 0; i < masking.size(); i++)
+//			{
+//				String temp = masking.get(i).getEmail();
+//				masking.get(i).setEmail(temp.substring(0, 2) + "****");
+//			}
+//			req.getSession().setAttribute("stats", masking);
+//		}
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
 	}

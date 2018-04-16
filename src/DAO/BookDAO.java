@@ -24,20 +24,22 @@ public class BookDAO extends ObjectDAO {
 	 */
 	public BookBean getBookById(String bid) throws Exception {
 		String query = "SELECT * FROM book WHERE bid = ?";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, bid);
-		ResultSet r = p.executeQuery();
-		BookBean book = null;
-		if (r.next()) {
-			book = this.parseBookBean(r);
+		try(Connection con = this.ds.getConnection();
+			PreparedStatement p = con.prepareStatement(query)) {
+
+			p.setString(1, bid);
+			ResultSet r = p.executeQuery();
+			BookBean book = null;
+			if (r.next()) {
+				book = this.parseBookBean(r);
+			}
+			r.close();
+			p.close();
+			con.close();
+			if (book == null)
+				throw new Exception("No book with bid: " + bid);
+			return book;
 		}
-		r.close();
-		p.close();
-		con.close();
-		if(book==null)
-			throw new Exception("No book with bid: " + bid);
-		return book;
 	}
 	
 	/**
@@ -48,15 +50,17 @@ public class BookDAO extends ObjectDAO {
 	 */
 	public List<BookBean> getListOfBooksByTitle(String title) throws Exception {
 		String query = "SELECT * FROM book WHERE title LIKE ? ORDER BY title";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, title!=null?"%"+title+"%":"%");
-		ResultSet r = p.executeQuery();
-		List<BookBean> rv = this.parseResultSetToList(r);
-		r.close();
-		p.close();
-		con.close();
-		return rv;
+		try(Connection con = this.ds.getConnection();
+				PreparedStatement p = con.prepareStatement(query)) {
+
+			p.setString(1, title != null ? "%" + title + "%" : "%");
+			ResultSet r = p.executeQuery();
+			List<BookBean> rv = this.parseResultSetToList(r);
+			r.close();
+			p.close();
+			con.close();
+			return rv;
+		}
 	}
 
 	/**
@@ -73,18 +77,19 @@ public class BookDAO extends ObjectDAO {
 			query = "SELECT * FROM book WHERE category = ?";
 		}
 		query += " ORDER BY title";
-		
+		try(
 		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		if(category!=null) {
-			p.setString(1, category.toString());			
+		PreparedStatement p = con.prepareStatement(query)) {
+			if (category != null) {
+				p.setString(1, category.toString());
+			}
+			ResultSet r = p.executeQuery();
+			List<BookBean> rv = this.parseResultSetToList(r);
+			r.close();
+			p.close();
+			con.close();
+			return rv;
 		}
-		ResultSet r = p.executeQuery();
-		List<BookBean> rv = this.parseResultSetToList(r);
-		r.close();
-		p.close();
-		con.close();
-		return rv;		
 	}
 	
 	/**
@@ -113,13 +118,15 @@ public class BookDAO extends ObjectDAO {
 		BookBean book = this.getBookById(bid);
 		if(book==null) throw new Exception("No such book!");
 		String query = "UPDATE book b SET b.rating=(SELECT ROUND(AVG(poi.rating),1) FROM POItem poi INNER JOIN PO p ON poi.id=p.id WHERE poi.bid=? AND poi.rating>0 AND p.status='ORDERED') WHERE bid=?";
+		try(
 		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, bid);
-		p.setString(2, bid);
-		p.executeUpdate();
-		p.close();
-		con.close();
+		PreparedStatement p = con.prepareStatement(query)) {
+			p.setString(1, bid);
+			p.setString(2, bid);
+			p.executeUpdate();
+			p.close();
+			con.close();
+		}
 	}
 	
 	private List<BookBean> parseResultSetToList(ResultSet r) throws Exception {

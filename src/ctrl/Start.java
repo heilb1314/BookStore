@@ -19,7 +19,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import jdbc.DbManager;
 import bean.BookBean;
 import bean.BookReviewBean;
 import bean.ShoppingCartItemBean;
@@ -53,7 +52,7 @@ public class Start extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)Tapan
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String contextPath = request.getContextPath();
 		String path = request.getRequestURI().substring(request.getContextPath().length());
@@ -360,10 +359,7 @@ public class Start extends HttpServlet {
 			String bid = request.getParameter("bid");
 			String quantityStr = request.getParameter("quantity");
 			try {
-				this.getModel().getCartModel().addToCart(bid, quantityStr, request);<<<<<<< Tapan
-19
- 
-
+				this.getModel().getCartModel().addToCart(bid, quantityStr, request);
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.errorMessage = e.getMessage();

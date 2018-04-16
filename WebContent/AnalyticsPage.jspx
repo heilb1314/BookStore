@@ -20,6 +20,9 @@
 </script>
 </head>
 <body>
+
+
+
 	<jsp:directive.include file="NavBar.jspx" />
 	<jsp:directive.include file="Messager.jspx" />
 	<c:if test="${empty errorMessage}">

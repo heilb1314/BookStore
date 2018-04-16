@@ -9,7 +9,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name="user")
 @XmlType(propOrder={"id","username","firstname","lastname","userType"})
 public class UserBean {
-	
+
+	public UserBean() {}
+
 	@XmlType
 	@XmlEnum(String.class)
 	public static enum UserType {
