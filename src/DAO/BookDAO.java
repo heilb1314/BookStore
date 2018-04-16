@@ -23,7 +23,7 @@ public class BookDAO extends ObjectDAO {
 	 * @throws Exception
 	 */
 	public BookBean getBookById(String bid) throws Exception {
-		String query = "SELECT * FROM book WHERE bid = ?";
+		String query = "SELECT * FROM Book WHERE bid = ?";
 		try(Connection con = this.ds.getConnection();
 			PreparedStatement p = con.prepareStatement(query)) {
 
@@ -49,7 +49,7 @@ public class BookDAO extends ObjectDAO {
 	 * @throws Exception
 	 */
 	public List<BookBean> getListOfBooksByTitle(String title) throws Exception {
-		String query = "SELECT * FROM book WHERE title LIKE ? ORDER BY title";
+		String query = "SELECT * FROM Book WHERE title LIKE ? ORDER BY title";
 		try(Connection con = this.ds.getConnection();
 				PreparedStatement p = con.prepareStatement(query)) {
 
@@ -72,9 +72,9 @@ public class BookDAO extends ObjectDAO {
 	public List<BookBean> getListOfBooksByCategory(BookBean.Category category) throws Exception {
 		String query = "";
 		if(category==null) {
-			query = "SELECT * FROM book";
+			query = "SELECT * FROM Book";
 		} else {
-			query = "SELECT * FROM book WHERE category = ?";
+			query = "SELECT * FROM Book WHERE category = ?";
 		}
 		query += " ORDER BY title";
 		try(
