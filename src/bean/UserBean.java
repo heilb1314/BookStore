@@ -1,7 +1,5 @@
 package bean;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -10,34 +8,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder={"id","username","firstname","lastname","userType"})
 public class UserBean {
 	
-	@XmlType
-	@XmlEnum(String.class)
-	public static enum UserType {
-		@XmlEnumValue("Visitor") VISITOR,
-		@XmlEnumValue("Customer") CUSTOMER,
-		@XmlEnumValue("Partner") PARTNER,
-		@XmlEnumValue("Administrator") ADMIN;
-		
-		public static UserType getUserType(String type) {
-			if(type==null) return null;
-			switch(type.toLowerCase()) {
-			case "visitor": return UserType.VISITOR;
-			case "customer": return UserType.CUSTOMER;
-			case "partner": return UserType.PARTNER;
-			case "admin": return UserType.ADMIN;
-			default: return null;
-			}
-		}
-		
-	}
-	
 	private int id;
 	private String username;
 	private String firstname;
 	private String lastname;
-	private UserType userType;
+	private enums.UserType userType;
 	
-	public UserBean(int id, String username, String fname, String lname, UserType type) {
+	public UserBean(int id, String username, String fname, String lname, enums.UserType type) {
 		this.setId(id);
 		this.setUsername(username);
 		this.setFirstname(fname);
@@ -77,11 +54,11 @@ public class UserBean {
 		this.lastname = lastname;
 	}
 
-	public UserType getUserType() {
+	public enums.UserType getUserType() {
 		return userType;
 	}
 
-	public void setUserType(UserType userType) {
+	public void setUserType(enums.UserType userType) {
 		this.userType = userType;
 	}
 	

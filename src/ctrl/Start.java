@@ -208,7 +208,7 @@ public class Start extends HttpServlet {
 			if (bookQueryTitle != null) {
 				books = this.getModel().retrieveBooksByTitle(bookQueryTitle);
 			} else {
-				BookBean.Category c = BookBean.Category.getCategory(bookQueryCategory);
+				enums.Category c = enums.Category.getCategory(bookQueryCategory);
 				books = this.getModel().retrieveBooksByCategory(c);
 			}
 		} catch (Exception e) {

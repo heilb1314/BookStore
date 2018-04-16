@@ -5,7 +5,6 @@ import javax.servlet.http.HttpSession;
 
 import DAO.UserDAO;
 import bean.UserBean;
-import bean.UserBean.UserType;
 
 public class UserModel {
 	
@@ -46,7 +45,7 @@ public class UserModel {
 	public boolean isAdmin(HttpServletRequest request) throws Exception {
 		if(this.loggedIn(request)) {
 			UserBean user = this.getUser(request);
-			return user.getUserType() == UserType.ADMIN;
+			return user.getUserType() == enums.UserType.ADMIN;
 		} else {
 			throw new Exception("Please login first!");
 		}
@@ -60,9 +59,9 @@ public class UserModel {
 	public void updateVisitorToCustomer(HttpServletRequest request) throws Exception {
 		UserBean user = this.getUser(request);
 		if(user==null) throw new Exception("Please Log out first.");
-		if(user.getUserType()!=UserType.VISITOR) throw new Exception("User is not a visitor!");
-		this.userDAO.updateUserType(this.getUser(request).getId(), UserType.CUSTOMER);
-		this.user.setUserType(UserType.CUSTOMER);
+		if(user.getUserType() != enums.UserType.VISITOR) throw new Exception("User is not a visitor!");
+		this.userDAO.updateUserType(this.getUser(request).getId(), enums.UserType.CUSTOMER);
+		this.user.setUserType(enums.UserType.CUSTOMER);
 	}
 	/**
 	 * Register a user
@@ -76,7 +75,7 @@ public class UserModel {
 	 */
 	public void registerUser(String username, String firstname, String lastname, String password, String verifiedPassword, HttpServletRequest request) throws Exception {
 		if(!password.equals(verifiedPassword)) throw new Exception("Passwords are not matched.");
-		this.userDAO.signup(username, password, firstname, lastname, UserType.VISITOR.toString());
+		this.userDAO.signup(username, password, firstname, lastname, enums.UserType.VISITOR.toString());
 	}
 	
 	/**

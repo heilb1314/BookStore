@@ -12,7 +12,7 @@ import bean.BookBean;
 public class BookListWrapper {
 	
 	@XmlAttribute(name="category")
-	public BookBean.Category category;
+	public enums.Category category;
 	
 	@XmlElement(name="book")
 	public List<BookBean> list;
@@ -21,7 +21,7 @@ public class BookListWrapper {
 		this(null,null);
 	}
 	
-	public BookListWrapper(BookBean.Category c, List<BookBean> list) {
+	public BookListWrapper(enums.Category c, List<BookBean> list) {
 		this.category = c;
 		this.list = list;
 	}

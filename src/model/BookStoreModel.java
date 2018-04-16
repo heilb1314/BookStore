@@ -17,7 +17,6 @@ import bean.BookReviewBean;
 import bean.PoBean;
 import bean.ShoppingCartItemBean;
 import bean.UserBean;
-import bean.UserBean.UserType;
 import javafx.util.Pair;
 import bean.VisitEventBean;
 
@@ -75,7 +74,7 @@ public class BookStoreModel {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<BookBean> retrieveBooksByCategory(BookBean.Category category) throws Exception {
+	public List<BookBean> retrieveBooksByCategory(enums.Category category) throws Exception {
 		return this.bookDAO.getListOfBooksByCategory(category);
 	}
 	
@@ -182,7 +181,7 @@ public class BookStoreModel {
 		List<ShoppingCartItemBean> cartItems = new ArrayList<ShoppingCartItemBean>(this.getCartModel().getMyCart(request).values());
 		this.poDAO.addPoItems(cartItems, pid);
 		this.orderPo(pid, request);
-		if(user.getUserType()==UserType.VISITOR) {
+		if(user.getUserType()==enums.UserType.VISITOR) {
 			this.getUserModel().updateVisitorToCustomer(request);
 		}
 	}

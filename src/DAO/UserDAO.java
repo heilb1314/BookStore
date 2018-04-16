@@ -1,16 +1,12 @@
 package DAO;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import java.security.SecureRandom;
-
-import bean.AddressBean;
 import bean.UserBean;
-import bean.UserBean.UserType;
 
 public class UserDAO extends ObjectDAO {
 
@@ -24,15 +20,27 @@ public class UserDAO extends ObjectDAO {
 	 * @param userType
 	 * @throws Exception
 	 */
-	public void updateUserType(int id, UserType userType) throws Exception {
+	public void updateUserType(int id, enums.UserType userType) throws Exception {
 		String query = "UPDATE user SET user_type=? WHERE id=?";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, userType.toString());
-		p.setInt(2, id);
-		p.executeUpdate();
-		p.close();
-		con.close();
+		Connection con = null;
+		PreparedStatement p = null;
+		try {
+			con = this.ds.getConnection();
+			p = con.prepareStatement(query);
+			p.setString(1, userType.toString());
+			p.setInt(2, id);
+			p.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if(p!=null) p.close();
+				if(con!=null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -44,21 +52,35 @@ public class UserDAO extends ObjectDAO {
 	public UserBean getUserById(int uid) throws Exception {
 		UserBean user = null;
 		String query = "SELECT * FROM user WHERE id = ?";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setInt(1, uid);
-		ResultSet r = p.executeQuery();
-		if(r.next()) {
-			int id = r.getInt("id");
-			String username = r.getString("username");
-			String firstname = r.getString("fname");
-			String lastname = r.getString("lname");
-			UserType userType = UserType.getUserType(r.getString("user_type").toLowerCase());
-			user = new UserBean(id,username,firstname,lastname,userType);
+		Connection con = null;
+		PreparedStatement p = null;
+		ResultSet r = null;
+		try {
+			con = this.ds.getConnection();
+			p = con.prepareStatement(query);
+			p.setInt(1, uid);
+			r = p.executeQuery();
+			if(r.next()) {
+				int id = r.getInt("id");
+				String username = r.getString("username");
+				String firstname = r.getString("fname");
+				String lastname = r.getString("lname");
+				enums.UserType userType = enums.UserType.getUserType(r.getString("user_type").toLowerCase());
+				user = new UserBean(id,username,firstname,lastname,userType);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if(r!=null) r.close();
+				if(p!=null) p.close();
+				if(con!=null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		r.close();
-		p.close();
-		con.close();
+		
 		return user;
 	}
 	
@@ -80,34 +102,42 @@ public class UserDAO extends ObjectDAO {
 		String dbPassword = null;
 		
 		String query = "SELECT * FROM User WHERE username=?";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, username);
-		ResultSet r = p.executeQuery();
-		if(r.next()) {
-			int id = r.getInt("id");
-			String firstname = r.getString("fname");
-			String lastname = r.getString("lname");
-			dbPassword = r.getString("password");
-			UserType userType = UserType.getUserType(r.getString("user_type").toLowerCase());
-			user = new UserBean(id,username,firstname,lastname,userType);
+		
+		Connection con = null;
+		PreparedStatement p = null;
+		ResultSet r = null;
+		try {
+			con = this.ds.getConnection();
+			p = con.prepareStatement(query);
+			p.setString(1, username);
+			r = p.executeQuery();
+			if(r.next()) {
+				int id = r.getInt("id");
+				String firstname = r.getString("fname");
+				String lastname = r.getString("lname");
+				dbPassword = r.getString("password");
+				enums.UserType userType = enums.UserType.getUserType(r.getString("user_type").toLowerCase());
+				user = new UserBean(id,username,firstname,lastname,userType);
+			}
+			if(user == null) throw new Exception("Username doesn't exist.");
+	        String hashedPassword = UserDAO.hash(password);
+			if(hashedPassword.equals(dbPassword)) {
+				return user;
+			} else {
+				throw new Exception("Password is not correct!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if(r!=null) r.close();
+				if(p!=null) p.close();
+				if(con!=null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		r.close();
-		p.close();
-		con.close();
-		
-		if(user == null) throw new Exception("Username doesn't exist.");
-		
-        String hashedPassword = this.hash(password);
-		System.out.println("pass: "+hashedPassword);
-		System.out.println("saved pass: "+dbPassword);
-		
-		if(hashedPassword.equals(dbPassword)) {
-			return user;
-		} else {
-			throw new Exception("Password is not correct!");
-		}
-		
 	}
 	
 	/**
@@ -131,37 +161,39 @@ public class UserDAO extends ObjectDAO {
 		this.validateUserType(userType);
 		
 		String query = "SELECT * FROM User WHERE username=?";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, username);
-		ResultSet r = p.executeQuery();
-		if(r.next()) {
-			// username already existed
-			r.close();
+		Connection con = null;
+		PreparedStatement p = null;
+		ResultSet r = null;
+		try {
+			con = this.ds.getConnection();
+			p = con.prepareStatement(query);
+			p.setString(1, username);
+			r = p.executeQuery();
+			if(r.next())
+				throw new Exception("Username is already taken.");
+			String hashedPassword = UserDAO.hash(password);
 			p.close();
-			con.close();
-			throw new Exception("Username is already taken.");
+			// insert user
+			query = "INSERT INTO User (username, password, lname, fname, user_type) VALUES (?,?,?,?,?)";
+			p = con.prepareStatement(query);
+			p.setString(1, username);
+			p.setString(2, hashedPassword);
+			p.setString(3, lname);
+			p.setString(4, fname);
+			p.setString(5, userType.toString());
+			p.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if(r!=null) r.close();
+				if(p!=null) p.close();
+				if(con!=null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		if(!r.isClosed()) {
-			r.close();
-		}
-		p.close();
-		// hash password
-		
-		
-		String hashedPassword = this.hash(password);
-		
-		// insert user
-		query = "INSERT INTO User (username, password, lname, fname, user_type) VALUES (?,?,?,?,?)";
-		p = con.prepareStatement(query);
-		p.setString(1, username);
-		p.setString(2, hashedPassword);
-		p.setString(3, lname);
-		p.setString(4, fname);
-		p.setString(5, userType.toString());
-		p.executeUpdate();
-		p.close();
-		con.close();
 	}
 	
 	
@@ -188,7 +220,7 @@ public class UserDAO extends ObjectDAO {
 	}
 	
 	private void validateUserType(String type) throws Exception {
-		if(UserBean.UserType.getUserType(type.toLowerCase())==null) throw new Exception("Invalid user type.");
+		if(enums.UserType.getUserType(type.toLowerCase())==null) throw new Exception("Invalid user type.");
 	}
 	
 	private void validateName(String name, String label) throws Exception {

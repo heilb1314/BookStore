@@ -1,5 +1,7 @@
-/bean/
-/listener/
-/ctrl/
 /DAO/
+/bean/
+/ctrl/
+/enums/
+/filter/
+/listener/
 /model/

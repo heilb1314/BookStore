@@ -3,6 +3,7 @@ package DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,19 +25,32 @@ public class BookDAO extends ObjectDAO {
 	 */
 	public BookBean getBookById(String bid) throws Exception {
 		String query = "SELECT * FROM book WHERE bid = ?";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, bid);
-		ResultSet r = p.executeQuery();
+		Connection con = null;
+		PreparedStatement p = null;
+		ResultSet r = null;
 		BookBean book = null;
-		if (r.next()) {
-			book = this.parseBookBean(r);
+		try {
+			con = this.ds.getConnection();
+			p = con.prepareStatement(query);
+			p.setString(1, bid);
+			r = p.executeQuery();
+			if (r.next()) {
+				book = this.parseBookBean(r);
+			}
+			if(book==null)
+				throw new Exception("No book with bid: " + bid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if(r!=null) r.close();
+				if(p!=null) p.close();
+				if(con!=null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		r.close();
-		p.close();
-		con.close();
-		if(book==null)
-			throw new Exception("No book with bid: " + bid);
 		return book;
 	}
 	
@@ -48,14 +62,28 @@ public class BookDAO extends ObjectDAO {
 	 */
 	public List<BookBean> getListOfBooksByTitle(String title) throws Exception {
 		String query = "SELECT * FROM book WHERE title LIKE ? ORDER BY title";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, title!=null?"%"+title+"%":"%");
-		ResultSet r = p.executeQuery();
-		List<BookBean> rv = this.parseResultSetToList(r);
-		r.close();
-		p.close();
-		con.close();
+		Connection con = null;
+		PreparedStatement p = null;
+		ResultSet r = null;
+		List<BookBean> rv = null;
+		try {
+			con = this.ds.getConnection();
+			p = con.prepareStatement(query);
+			p.setString(1, title!=null?"%"+title+"%":"%");
+			r = p.executeQuery();
+			rv = this.parseResultSetToList(r);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if(r!=null) r.close();
+				if(p!=null) p.close();
+				if(con!=null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return rv;
 	}
 
@@ -65,7 +93,7 @@ public class BookDAO extends ObjectDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<BookBean> getListOfBooksByCategory(BookBean.Category category) throws Exception {
+	public List<BookBean> getListOfBooksByCategory(enums.Category category) throws Exception {
 		String query = "";
 		if(category==null) {
 			query = "SELECT * FROM book";
@@ -73,17 +101,30 @@ public class BookDAO extends ObjectDAO {
 			query = "SELECT * FROM book WHERE category = ?";
 		}
 		query += " ORDER BY title";
-		
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		if(category!=null) {
-			p.setString(1, category.toString());			
+		Connection con = null;
+		PreparedStatement p = null;
+		ResultSet r = null;
+		List<BookBean> rv = null;
+		try {
+			con = this.ds.getConnection();
+			p = con.prepareStatement(query);
+			if(category!=null) {
+				p.setString(1, category.toString());			
+			}
+			r = p.executeQuery();
+			rv = this.parseResultSetToList(r);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if(r!=null) r.close();
+				if(p!=null) p.close();
+				if(con!=null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		ResultSet r = p.executeQuery();
-		List<BookBean> rv = this.parseResultSetToList(r);
-		r.close();
-		p.close();
-		con.close();
 		return rv;		
 	}
 	
@@ -98,7 +139,7 @@ public class BookDAO extends ObjectDAO {
 		String title = r.getString("TITLE");
 		int price = r.getInt("PRICE");
 		float rating = r.getFloat("rating");
-		BookBean.Category category = BookBean.Category.getCategory(r.getString("CATEGORY"));
+		enums.Category category = enums.Category.getCategory(r.getString("CATEGORY"));
 		String description = r.getString("DESCRIPTION");
 		BookBean book = new BookBean(bid, title, price, category, rating, description);
 		return book;
@@ -113,13 +154,25 @@ public class BookDAO extends ObjectDAO {
 		BookBean book = this.getBookById(bid);
 		if(book==null) throw new Exception("No such book!");
 		String query = "UPDATE book b SET b.rating=(SELECT ROUND(AVG(poi.rating),1) FROM POItem poi INNER JOIN PO p ON poi.id=p.id WHERE poi.bid=? AND poi.rating>0 AND p.status='ORDERED') WHERE bid=?";
-		Connection con = this.ds.getConnection();
-		PreparedStatement p = con.prepareStatement(query);
-		p.setString(1, bid);
-		p.setString(2, bid);
-		p.executeUpdate();
-		p.close();
-		con.close();
+		Connection con = null;
+		PreparedStatement p = null;
+		try {
+			con = this.ds.getConnection();
+			p = con.prepareStatement(query);
+			p.setString(1, bid);
+			p.setString(2, bid);
+			p.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if(p!=null) p.close();
+				if(con!=null) con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}	
 	}
 	
 	private List<BookBean> parseResultSetToList(ResultSet r) throws Exception {

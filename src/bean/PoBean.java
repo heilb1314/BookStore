@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -18,30 +16,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder={"id","lname","fname","status","address","items"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PoBean {
-	@XmlType
-	@XmlEnum(String.class)
-	public static enum Status {
-		@XmlEnumValue("Ordered") ORDERED,
-		@XmlEnumValue("Processed") PROCESSED,
-		@XmlEnumValue("Denied") DENIED;
-		
-		public static Status getStatus(String status) {
-			if(status==null) return null;
-			switch(status.toLowerCase()) {
-			case "ordered": return Status.ORDERED;
-			case "processed": return Status.PROCESSED;
-			case "denied": return Status.DENIED;
-			default: return null;
-			}
-		}
-	}
 	
 	@XmlAttribute
 	private int id;
 	@XmlAttribute
 	private UserBean user;
 	@XmlAttribute(name="status")
-	private PoBean.Status status;
+	private enums.Status status;
 	@XmlElement
 	private AddressBean address;
 	@XmlElementWrapper(name="items")
@@ -49,7 +30,7 @@ public class PoBean {
 	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
 
-	public PoBean(int id, UserBean user, Status status, AddressBean address) {
+	public PoBean(int id, UserBean user, enums.Status status, AddressBean address) {
 		super();
 		this.setId(id);
 		this.setUser(user);
@@ -63,10 +44,10 @@ public class PoBean {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public PoBean.Status getStatus() {
+	public enums.Status getStatus() {
 		return status;
 	}
-	public void setStatus(PoBean.Status status) {
+	public void setStatus(enums.Status status) {
 		this.status = status;
 	}
 	public AddressBean getAddress() {

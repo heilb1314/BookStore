@@ -1,47 +1,22 @@
 package bean;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import enums.Category;
 
 @XmlRootElement(name="book")
 @XmlType(propOrder={"bid","title","price","category","description","rating"})
 public class BookBean extends JsonBean {
 	
-	@XmlType
-	@XmlEnum(String.class)
-	public static enum Category {
-		@XmlEnumValue("Science") SCIENCE,
-		@XmlEnumValue("Fiction") FICTION,
-		@XmlEnumValue("Engineering") ENGINEERING;
-		
-		public static Category getCategory(String category) {
-			if(category==null) return null;
-			switch(category.toLowerCase()) {
-			case "science": return Category.SCIENCE;
-			case "fiction": return Category.FICTION;
-			case "engineering": return Category.ENGINEERING;
-			default: return null;
-			}
-		}
-		
-	}
-	
-	
 	private String bid;
 	private String title;
 	private int price;
 	private float rating;
-	private BookBean.Category category;
+	private String category;
 	private String description;
-	private Set<PoItemBean> poItems = new HashSet<PoItemBean>(0);
 	
 	public BookBean() {
 		this("","",0,null,0,"");
@@ -52,7 +27,7 @@ public class BookBean extends JsonBean {
 		this.bid = bid;
 		this.title = title;
 		this.price = price;
-		this.category = category;
+		this.category = category.toString();
 		this.rating = rating;
 		this.description = description;
 	}
@@ -86,21 +61,12 @@ public class BookBean extends JsonBean {
 		this.price = price;
 	}
 
-	public BookBean.Category getCategory() {
+	public String getCategory() {
 		return category;
 	}
 
-	public void setCategory(BookBean.Category category) {
-		this.category = category;
-	}
-	
-	@XmlTransient
-	public Set<PoItemBean> getPoItems() {
-		return poItems;
-	}
-
-	public void setPoItems(Set<PoItemBean> poItems) {
-		this.poItems = poItems;
+	public void setCategory(Category category) {
+		this.category = category.toString();
 	}
 	
 	public String getDescription() {

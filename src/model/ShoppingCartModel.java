@@ -44,6 +44,7 @@ public class ShoppingCartModel {
 	 */
 	public Map<String, ShoppingCartItemBean> getMyCart(HttpServletRequest request) {
 		HttpSession session = request.getSession();
+		@SuppressWarnings("unchecked")
 		Map<String, ShoppingCartItemBean> cart = (Map<String, ShoppingCartItemBean>) session.getAttribute("cart");
 		if (cart == null) {
 			cart = new HashMap<String, ShoppingCartItemBean>();

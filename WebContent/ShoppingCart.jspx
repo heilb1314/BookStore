@@ -31,7 +31,7 @@
 		<div class="flex-container">
 			<c:forEach var="item" items="${books}">
 				<c:set var="book" value="${item.book}" />
-				<jsp:directive.include file="BookCard.jspx" />
+				<jsp:directive.include file="ShoppingItemCard.jspx" />
 			</c:forEach>
 			<jsp:include page="BookDetail.jspx" />
 		</div>
