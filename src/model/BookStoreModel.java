@@ -258,8 +258,8 @@ public class BookStoreModel {
      * @throws Exception
      */
     public List<Pair<Integer, String>> retrieveUserPurchaseStatistics(HttpServletRequest request) throws Exception {
-        UserBean user = UserModel.getUser(request);
-        if (user == null || !user.isAdmin()) throw new Exception("No Permission!");
+        UserBean user = UserModel.getOrSetUser(request);
+        if (!user.isAdmin()) throw new Exception("No Permission!");
         return this.poDAO.getPurchaseStats();
     }
 

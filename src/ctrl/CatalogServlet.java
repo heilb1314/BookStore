@@ -20,8 +20,8 @@ import javax.xml.bind.Marshaller;
  */
 @WebServlet("/getProductInfo")
 public class CatalogServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+    private static final long serialVersionUID = 1L;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -29,36 +29,36 @@ public class CatalogServlet extends HttpServlet {
         super();
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String bookId = request.getParameter("bookId");
-		//Todo: filter
-		UserBean user = UserModel.getOrSetUser(request);
-		if(bookId == null) {
-			response.sendError(404, "Book missing book id");
-		} else if(user.isCustomer() || !user.isVisitor()) {
-			response.sendError(404, "Invalid credentials");
-		} else {
-			try {
-				BookBean book = BookStoreModel.getInstance().retrieveBookById(bookId);
-				JAXBContext ctx = JAXBContext.newInstance(BookBean.class);
-				Marshaller m = ctx.createMarshaller();
-				m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-				response.setContentType("application/xml");
-				m.marshal(book, response.getOutputStream());
-			} catch (Exception e){
-				response.sendError(404, "No Such Book");
-			}
-		}
-	}
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String bookId = request.getParameter("bookId");
+        //Todo: filter
+        UserBean user = UserModel.getOrSetUser(request);
+        if (bookId == null) {
+            response.sendError(404, "Book missing book id");
+        } else if (user.isCustomer() || user.isVisitor()) {
+            response.sendError(404, "Invalid credentials");
+        } else {
+            try {
+                BookBean book = BookStoreModel.getInstance().retrieveBookById(bookId);
+                JAXBContext ctx = JAXBContext.newInstance(BookBean.class);
+                Marshaller m = ctx.createMarshaller();
+                m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                response.setContentType("application/xml");
+                m.marshal(book, response.getOutputStream());
+            } catch (Exception e) {
+                response.sendError(404, "No Such Book");
+            }
+        }
+    }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 
 }

@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 @XmlRootElement(name = "purchaseOrder")
-@XmlType(propOrder = {"id", "lname", "fname", "status", "address", "items"})
+@XmlType(propOrder = {"id", "status", "address", "user"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PoBean {
 

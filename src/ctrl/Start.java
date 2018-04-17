@@ -444,22 +444,27 @@ public class Start extends HttpServlet {
         String lastname = request.getParameter("lastname");
         String password = request.getParameter("password");
         String verifiedPassword = request.getParameter("verifiedPassword");
-        try {
-            UserBean user = getBookStoreModel(request).getUserModel().registerCustomerUser(username, firstname,
-                    lastname, password, verifiedPassword,
-                    request);
-            UserModel.setUser(request, user);
-            //Todo (Jason): Why is this a parameter on servlet?
-            this.successMessage = "User successfully registered!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            // setup error message and store form info
-            this.errorMessage = e.getMessage();
-            this.requestAttributes.put("username", username);
-            this.requestAttributes.put("firstname", username);
-            this.requestAttributes.put("lastname", username);
+        if(UserModel.isLoggedIn(request)){
+            response.sendError(403, "Already logged in");
+        } else {
+            try {
+                UserBean user = getBookStoreModel(request).getUserModel().registerCustomerUser(username, firstname,
+                        lastname, password, verifiedPassword,
+                        request);
+                UserModel.setUser(request, user);
+                //Todo (Jason): Why is this a parameter on servlet?
+                this.successMessage = "User successfully registered!";
+            } catch (Exception e) {
+                e.printStackTrace();
+                // setup error message and store form info
+                this.errorMessage = e.getMessage();
+                this.requestAttributes.put("username", username);
+                this.requestAttributes.put("firstname", username);
+                this.requestAttributes.put("lastname", username);
+                response.sendError(403, "Already logged in");
+            }
+            response.sendRedirect(route);
         }
-        response.sendRedirect(route);
     }
 
     /**
@@ -482,12 +487,13 @@ public class Start extends HttpServlet {
             try {
                 BookStoreModel.getInstance().getUserModel().loginUser(username, password, request);
                 this.successMessage = "Welcome back " + username;
-                response.sendRedirect("/bookStore/Start");
+//                response.sendRedirect("/bookStore/Start");
+                response.sendRedirect(route);
             } catch (Exception e) {
                 e.printStackTrace();
                 this.errorMessage = e.getMessage();
                 this.requestAttributes.put("username", username);
-                response.sendRedirect(route);
+                response.sendError(403, errorMessage);
             }
         }
     }

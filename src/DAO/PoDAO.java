@@ -3,10 +3,7 @@ package DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import bean.AddressBean;
 import bean.BookBean;
@@ -250,7 +247,7 @@ public class PoDAO extends ObjectDAO {
         try (Connection con = this.ds.getConnection();
              PreparedStatement p = con.prepareStatement(query);
              ResultSet r = p.executeQuery()) {
-            List<Pair<Integer, String>> results = new ArrayList<>();
+            List<Pair<Integer, String>> results = new LinkedList<>();
             while (r.next()) {
                 String uid = r.getString("uid");
                 String zip = r.getString("zip");
