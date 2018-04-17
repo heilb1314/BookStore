@@ -7,10 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import DAO.AddressDAO;
-import DAO.BookDAO;
-import DAO.PoDAO;
-import DAO.VisitEventDAO;
+import DAO.*;
 import bean.AddressBean;
 import bean.BookBean;
 import bean.BookReviewBean;
@@ -30,7 +27,11 @@ public class BookStoreModel {
     private ShoppingCartModel cartModel;
     private UserModel userModel;
 
-    public BookStoreModel() {
+    private static class BookStoreModelHolder {
+        private static final BookStoreModel INSTANCE = new BookStoreModel();
+    }
+
+    private BookStoreModel() {
         try {
             this.bookDAO = new BookDAO();
             this.poDAO = new PoDAO();
@@ -39,8 +40,12 @@ public class BookStoreModel {
             this.cartModel = new ShoppingCartModel();
             this.userModel = new UserModel();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); //Todo: ???
         }
+    }
+
+    public static BookStoreModel getInstance() {
+        return BookStoreModelHolder.INSTANCE;
     }
 
     /**
@@ -104,7 +109,7 @@ public class BookStoreModel {
     public List<BookReviewBean> retrieveBookReviewsByBookId(String bid) throws Exception {
         BookBean book = this.retrieveBookById(bid);
         if (book == null) throw new Exception("Book Not found!");
-        return this.poDAO.getBookReviewById(bid);
+        return this.poDAO.getBookReviewsById(bid);
     }
 
     /**
@@ -182,20 +187,24 @@ public class BookStoreModel {
      * @param request
      * @throws Exception
      */
-    public void processPo(String street, String province, String country, String zip, String phone, String bstreet, String bprovince, String bcountry, String bzip, String firstname, String lastname, String cardNumber, String month, String year, String cvc, HttpServletRequest request) throws Exception {
-        UserBean user = this.getUserModel().getUser(request);
+    public void processPo(String street, String province, String country, String zip,
+                          String phone, String bstreet, String bprovince, String bcountry,
+                          String bzip, String firstname, String lastname, String cardNumber,
+                          String month, String year, String cvc, HttpServletRequest request) throws Exception {
+        UserBean user = UserModel.getUser(request);
         if (user == null) throw new Exception("Please log in first!");
         this.validateShoppingCart(request);
         this.validateAddress(street, province, country, zip);
         this.validatePoPayment(bstreet, bprovince, bcountry, bzip, firstname, lastname, cardNumber, month, year, cvc);
         int addressId = this.addAddress(street, province, country, zip, phone);
         int pid = this.poDAO.processPo(addressId, user.getId());
-        List<ShoppingCartItemBean> cartItems = new ArrayList<ShoppingCartItemBean>(this.getCartModel().getMyCart(request).values());
+        List<ShoppingCartItemBean> cartItems = new ArrayList<>(this.getCartModel().getMyCart(request).values());
         this.poDAO.addPoItems(cartItems, pid);
         this.orderPo(pid, request);
-        if (user.getUserType() == UserType.VISITOR) {
-            this.getUserModel().updateVisitorToCustomer(request);
-        }
+        //todo: This shouldn't happen. you can't update a visitor to a customer if you are not registered
+//        if (user.getUserType() == UserType.VISITOR) {
+//            this.getUserModel().updateVisitorToCustomer(request);
+//        }
     }
 
     /**
@@ -249,7 +258,8 @@ public class BookStoreModel {
      * @throws Exception
      */
     public List<Pair<Integer, String>> retrieveUserPurchaseStatistics(HttpServletRequest request) throws Exception {
-        if (!this.userModel.isAdmin(request)) throw new Exception("No Permission!");
+        UserBean user = UserModel.getUser(request);
+        if (user == null || !user.isAdmin()) throw new Exception("No Permission!");
         return this.poDAO.getPurchaseStats();
     }
 
@@ -263,12 +273,12 @@ public class BookStoreModel {
      * @throws Exception
      */
     public void rateBook(String bid, String rating, String review, HttpServletRequest request) throws Exception {
-        if (!this.getUserModel().loggedIn(request)) throw new Exception("Please Login first!");
+        if (!UserModel.isLoggedIn(request)) throw new Exception("Please Log in first!");
         try {
             int rate = Integer.parseInt(rating);
             if (rate < 1 || rate > 5) throw new NumberFormatException();
             if (review.length() > 255) throw new Exception("Review is too long! Must be less than 255 characters.");
-            UserBean user = this.getUserModel().getUser(request);
+            UserBean user = UserModel.getUser(request);
             BookBean book = this.retrieveBookById(bid);
             if (book == null) throw new Exception("Invalid Book id");
             int pid = this.poDAO.getAvailableRatingPurchaseItemId(user.getId(), bid);

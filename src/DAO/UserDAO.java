@@ -14,7 +14,7 @@ import bean.UserType;
 
 public class UserDAO extends ObjectDAO {
 
-    public UserDAO() throws Exception {
+    public UserDAO() {
         super();
     }
 
@@ -124,7 +124,7 @@ public class UserDAO extends ObjectDAO {
      * @param userType
      * @throws Exception
      */
-    public void signup(String username, String password, String fname, String lname, String userType) throws Exception {
+    public void signup(String username, String password, String fname, String lname, UserType userType) throws Exception {
 
         // validations
         this.validateUsername(username);

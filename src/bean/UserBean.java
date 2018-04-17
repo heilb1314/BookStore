@@ -10,7 +10,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"id", "username", "firstname", "lastname", "userType"})
 public class UserBean {
 
-    public UserBean() {
+    //Visitor-only instantiation
+    public UserBean(){
+        this.userType = UserType.VISITOR;
+    }
+
+    public static UserBean newVisitor() {
+        return new UserBean();
     }
 
     private int id;
@@ -65,6 +71,22 @@ public class UserBean {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public boolean isAdmin(){
+        return this.userType == UserType.ADMIN;
+    }
+
+    public boolean isCustomer(){
+        return this.userType == UserType.CUSTOMER;
+    }
+
+    public boolean isVisitor(){
+        return this.userType == UserType.VISITOR;
+    }
+
+    public boolean isPartner(){
+        return this.userType == UserType.PARTNER;
     }
 
 }

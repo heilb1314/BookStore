@@ -19,11 +19,7 @@ public class ProductCatalog {
     private static String author;
 
     public ProductCatalog() throws ClassNotFoundException {
-        try {
-            dataSource = (DataSource) (new InitialContext()).lookup("java:/comp/env/jdbc/EECS");
-        } catch (NamingException e) {
-            e.printStackTrace();
-        }
+            dataSource = DBConnection.getInstance();
     }
 
     public Map<String, Book> runQuery(String query) throws SQLException {

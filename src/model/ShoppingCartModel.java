@@ -12,6 +12,8 @@ import bean.ShoppingCartItemBean;
 
 public class ShoppingCartModel {
 
+    private static final String SESSION_KEY = "shopping_cart";
+
     public ShoppingCartModel() {
         // TODO Auto-generated constructor stub
     }

@@ -15,15 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import bean.BookBean;
-import bean.BookReviewBean;
-import bean.ShoppingCartItemBean;
-import bean.VisitEventBean;
+import bean.*;
 import javafx.util.Pair;
 import listener.NewPurchase;
 import model.BookStoreModel;
@@ -80,10 +72,10 @@ public class Start extends HttpServlet {
         } else if (path.equals("/Start/Login")) {
             this.handleGetLoginPageRequest(request, response);
         } else if (path.equals("/Start/Logout")) {
-            this.getModel(request).getUserModel().logout(request);
+            this.getBookStoreModel(request).getUserModel().logout(request);
             response.sendRedirect(contextPath + "/Start");
         } else if (path.equals("/Start/Payment")) {
-            if (!this.getModel(request).getUserModel().loggedIn(request)) {
+            if (!UserModel.isLoggedIn(request)) {
                 request.setAttribute("errorMessage", "Please Login first!");
             }
             request.getRequestDispatcher("/Payment.jspx").forward(request, response);
@@ -156,16 +148,11 @@ public class Start extends HttpServlet {
      *
      * @return
      */
-    private BookStoreModel getModel(HttpServletRequest request) {
-        BookStoreModel model = (BookStoreModel) request.getSession().getAttribute("model");
-        if (model == null) {
-            model = new BookStoreModel();
-            request.getSession().setAttribute("model", model);
-        }
-        return model;
+    private static BookStoreModel getBookStoreModel(HttpServletRequest request) {
+        return BookStoreModel.getInstance();
     }
 
-    private void setModel(HttpServletRequest request, BookStoreModel model){
+    private void setModel(HttpServletRequest request, BookStoreModel model) {
         request.getSession().setAttribute("model", model);
     }
 
@@ -219,10 +206,10 @@ public class Start extends HttpServlet {
         List<BookBean> books = null;
         try {
             if (bookQueryTitle != null) {
-                books = this.getModel(request).retrieveBooksByTitle(bookQueryTitle);
+                books = this.getBookStoreModel(request).retrieveBooksByTitle(bookQueryTitle);
             } else {
                 BookBean.Category c = BookBean.Category.getCategory(bookQueryCategory);
-                books = this.getModel(request).retrieveBooksByCategory(c);
+                books = this.getBookStoreModel(request).retrieveBooksByCategory(c);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -242,7 +229,7 @@ public class Start extends HttpServlet {
     public void handleGetShoppingCartPageRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<ShoppingCartItemBean> books = new ArrayList<ShoppingCartItemBean>(
-                this.getModel(request).getCartModel().getMyCart(request).values());
+                this.getBookStoreModel(request).getCartModel().getMyCart(request).values());
         request.setAttribute("books", books);
         request.getRequestDispatcher("/ShoppingCart.jspx").forward(request, response);
     }
@@ -273,6 +260,15 @@ public class Start extends HttpServlet {
         request.getRequestDispatcher("/Login.jspx").forward(request, response);
     }
 
+    private UserBean getOrSetUser(HttpServletRequest request) {
+        UserBean user = UserModel.getUser(request);
+        if (user == null) {
+            user = UserBean.newVisitor();
+            UserModel.setUser(request, user);
+        }
+        return user;
+    }
+
     /**
      * Go to analytics page
      *
@@ -284,7 +280,7 @@ public class Start extends HttpServlet {
     private void handleGetAnalyticsPageRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            if (!this.getModel(request).getUserModel().isAdmin(request))
+            if (getOrSetUser(request).isAdmin())
                 throw new Exception("Permission Denied!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -307,7 +303,7 @@ public class Start extends HttpServlet {
         String rating = request.getParameter("rating");
         String review = request.getParameter("review");
         try {
-            this.getModel(request).rateBook(bid, rating, review, request);
+            this.getBookStoreModel(request).rateBook(bid, rating, review, request);
             this.successMessage = "Review successfully submitted!";
         } catch (Exception e) {
             this.errorMessage = e.getMessage();
@@ -331,7 +327,7 @@ public class Start extends HttpServlet {
             System.out.println("handling Ajax request!");
             if (routine.equals("Analytics")) {
                 // get popular books list for ajax request
-                if (!this.getModel(request).getUserModel().isAdmin(request))
+                if (!getOrSetUser(request).isAdmin())
                     throw new Exception("Permission Denied!");
                 @SuppressWarnings("unchecked")
                 List<NewPurchase.Book> popularBooks = (List<NewPurchase.Book>) request.getServletContext()
@@ -347,7 +343,7 @@ public class Start extends HttpServlet {
                 System.out.println("receive book review fetch request bid=" + bid);
                 if (bid == null || bid.isEmpty())
                     throw new Exception("Must provide Book id.");
-                List<BookReviewBean> reviews = this.getModel(request).retrieveBookReviewsByBookId(bid);
+                List<BookReviewBean> reviews = this.getBookStoreModel(request).retrieveBookReviewsByBookId(bid);
                 System.out.println("review: " + reviews);
                 json = BookStoreUtil.constructAjaxResponse(reviews);
                 System.out.println(json.toString());
@@ -379,7 +375,7 @@ public class Start extends HttpServlet {
             String bid = request.getParameter("bid");
             String quantityStr = request.getParameter("quantity");
             try {
-                this.getModel(request).getCartModel().addToCart(bid, quantityStr, request);
+                this.getBookStoreModel(request).getCartModel().addToCart(bid, quantityStr, request);
             } catch (Exception e) {
                 e.printStackTrace();
                 this.errorMessage = e.getMessage();
@@ -407,7 +403,7 @@ public class Start extends HttpServlet {
             // Remove a book from cart
             String bid = request.getParameter("bid");
             try {
-                this.getModel(request).getCartModel().removeFromCart(bid, request);
+                this.getBookStoreModel(request).getCartModel().removeFromCart(bid, request);
                 this.successMessage = "Item successfully removed!";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -419,7 +415,7 @@ public class Start extends HttpServlet {
             String bid = request.getParameter("bid");
             String quantityStr = request.getParameter("quantity");
             try {
-                this.getModel(request).getCartModel().updateCartItemQuantity(bid, quantityStr, request);
+                this.getBookStoreModel(request).getCartModel().updateCartItemQuantity(bid, quantityStr, request);
                 this.successMessage = "Item successfully updated!";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -449,8 +445,10 @@ public class Start extends HttpServlet {
         String password = request.getParameter("password");
         String verifiedPassword = request.getParameter("verifiedPassword");
         try {
-            this.getModel(request).getUserModel().registerUser(username, firstname, lastname, password, verifiedPassword,
+            getBookStoreModel(request).getUserModel().registerCustomerUser(username, firstname,
+                    lastname, password, verifiedPassword,
                     request);
+            //Todo (Jason): Why is this a parameter on servlet?
             this.successMessage = "User successfully registered!";
         } catch (Exception e) {
             e.printStackTrace();
@@ -478,7 +476,7 @@ public class Start extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         try {
-            this.getModel(request).getUserModel().loginUser(username, password, request);
+            this.getBookStoreModel(request).getUserModel().loginUser(username, password, request);
             this.successMessage = "Welcome back " + username;
             response.sendRedirect("/bookStore/Start");
         } catch (Exception e) {
@@ -527,7 +525,7 @@ public class Start extends HttpServlet {
             String cvc = request.getParameter("cvc");
 
             try {
-                BookStoreModel model = this.getModel(request);
+                BookStoreModel model = getBookStoreModel(request);
                 model.processPo(street, province, country, zip, phone, bstreet, bprovince, bcountry, bzip,
                         firstname, lastname, cardNumber, month, year, cvc, request);
                 this.successMessage = "Order Successfully Completed!";
@@ -562,13 +560,14 @@ public class Start extends HttpServlet {
                                          HttpServletResponse response) throws ServletException, IOException {
         if (submit.equals("Get Statistics")) {
             try {
-                List<Pair<Integer, String>> results = this.getModel(request).retrieveUserPurchaseStatistics(request);
+                List<Pair<Integer, String>> results = getBookStoreModel(request).retrieveUserPurchaseStatistics(request);
                 request.getSession().setAttribute("stats", results);
+                response.sendRedirect(route);
             } catch (Exception e) {
                 e.printStackTrace();
                 this.errorMessage = e.getMessage();
+                response.sendError(401, e.getMessage());
             }
-            response.sendRedirect(route);
         }
     }
 

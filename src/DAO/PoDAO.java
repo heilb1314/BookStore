@@ -62,7 +62,7 @@ public class PoDAO extends ObjectDAO {
      * @return
      * @throws Exception
      */
-    public List<BookReviewBean> getBookReviewById(String bid) throws Exception {
+    public List<BookReviewBean> getBookReviewsById(String bid) throws Exception {
         List<BookReviewBean> reviews = new ArrayList<BookReviewBean>();
         String query = "SELECT poi.rating, poi.review FROM POItem poi INNER JOIN PO p ON poi.id=p.id AND p.status='ORDERED' INNER JOIN book b ON poi.bid=b.bid WHERE poi.bid=? AND poi.rating>0 ORDER BY poi.id DESC";
         try (Connection con = this.ds.getConnection();

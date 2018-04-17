@@ -10,7 +10,8 @@ import bean.UserType;
 public class UserModel {
 
     private UserDAO userDAO;
-    private UserBean user = null;
+    //Todo: possibly load dynamically from config.
+    private static final String SESSION_KEY = "user";
 
     public UserModel() throws Exception {
         this.userDAO = new UserDAO();
@@ -20,53 +21,32 @@ public class UserModel {
      * Get Session User
      *
      * @param request
+     * Todo: Possibly define on `UserBean` instead
      * @return
      */
-    public UserBean getUser(HttpServletRequest request) {
+    public static UserBean getUser(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        try {
-            UserBean user = (UserBean) session.getAttribute("user");
-            if (user == null) return null;
-            if (!user.equals(this.user)) {
-                this.user = user;
-            }
-            return user;
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.user = null;
-            return null;
-        }
+        return (UserBean) session.getAttribute(SESSION_KEY);
     }
 
-    /**
-     * If current login user is administor or not
-     *
-     * @param request
-     * @return
-     * @throws Exception
-     */
-    public boolean isAdmin(HttpServletRequest request) throws Exception {
-        if (this.loggedIn(request)) {
-            UserBean user = this.getUser(request);
-            return user.getUserType() == UserType.ADMIN;
-        } else {
-            throw new Exception("Please login first!");
-        }
+    public static void setUser(HttpServletRequest request, UserBean user){
+        request.getSession().setAttribute(SESSION_KEY, user);
     }
 
-    /**
-     * Update a visitor user type to customer
-     *
-     * @param request
-     * @throws Exception
-     */
-    public void updateVisitorToCustomer(HttpServletRequest request) throws Exception {
-        UserBean user = this.getUser(request);
-        if (user == null) throw new Exception("Please Log out first.");
-        if (user.getUserType() != UserType.VISITOR) throw new Exception("User is not a visitor!");
-        this.userDAO.updateUserType(this.getUser(request).getId(), UserType.CUSTOMER);
-        this.user.setUserType(UserType.CUSTOMER);
-    }
+    //Todo: posssibly remove?
+//    /**
+//     * Update a visitor user type to customer
+//     *
+//     * @param request
+//     * @throws Exception
+//     */
+//    public void updateVisitorToCustomer(HttpServletRequest request) throws Exception {
+//        UserBean user = this.getUser(request);
+//        if (user == null) throw new Exception("Please Log out first.");
+//        if (user.getUserType() != UserType.VISITOR) throw new Exception("User is not a visitor!");
+//        this.userDAO.updateUserType(user.getId(), UserType.CUSTOMER); //Todo: This requires registration
+//        this.user.setUserType(UserType.CUSTOMER);
+//    }
 
     /**
      * Register a user
@@ -79,9 +59,10 @@ public class UserModel {
      * @param request
      * @throws Exception
      */
-    public void registerUser(String username, String firstname, String lastname, String password, String verifiedPassword, HttpServletRequest request) throws Exception {
+    public void registerCustomerUser(String username, String firstname, String lastname, String password,
+                                     String verifiedPassword, HttpServletRequest request) throws Exception {
         if (!password.equals(verifiedPassword)) throw new Exception("Passwords are not matched.");
-        this.userDAO.signup(username, password, firstname, lastname, UserType.VISITOR.toString());
+        this.userDAO.signup(username, password, firstname, lastname, UserType.CUSTOMER);
     }
 
     /**
@@ -93,23 +74,23 @@ public class UserModel {
      * @throws Exception
      */
     public void loginUser(String username, String password, HttpServletRequest request) throws Exception {
-        if (this.loggedIn(request)) throw new Exception("Please Log out first.");
+        if (isLoggedIn(request)) throw new Exception("Please Log out first.");
+
         UserBean user = this.userDAO.login(username, password);
-        request.getSession().setAttribute("user", user);
-        this.user = user;
+        setUser(request, user);
     }
 
     /**
      * Check if user with given username is logged in or not.
+     * Todo: maybe move to userbean
      *
-     * @param username
      * @param request
      * @return
      */
-    public boolean loggedIn(HttpServletRequest request) {
+    public static boolean isLoggedIn(HttpServletRequest request) {
         try {
 
-            UserBean user = this.getUser(request);
+            UserBean user = getUser(request);
             if (user != null) {
                 return true;
             }
@@ -126,6 +107,14 @@ public class UserModel {
      */
     public void logout(HttpServletRequest request) {
         request.getSession().setAttribute("user", null);
-        this.user = null;
+    }
+
+    public static UserBean getOrSetUser(HttpServletRequest request) {
+        UserBean user = UserModel.getUser(request);
+        if (user == null) {
+            user = UserBean.newVisitor();
+            UserModel.setUser(request, user);
+        }
+        return user;
     }
 }
