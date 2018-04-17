@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:f="http://java.sun.com/jsp/jstl/fmt" version="2.0">
+	<jsp:directive.page contentType="text/html; charset=UTF-8"
+		pageEncoding="UTF-8" session="true" />
+	<jsp:output doctype-root-element="html"
+		doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+		omit-xml-declaration="true" />
+	<div class="navbar">
+		<ul>
+			<li><a href="${pageContext.request.contextPath}/Start">Home</a></li>
+			<li class="dropdown"><a href="javascript:void(0)"
+				class="dropbtn">Category</a>
+				<div class="dropdown-content">
+					<a href="${pageContext.request.contextPath}/Start?category=science">Science</a>
+					<a href="${pageContext.request.contextPath}/Start?category=fiction">Fiction</a>
+					<a
+						href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
+				</div></li>
+			<c:choose>
+				<c:when test="${empty sessionScope.user}">
+					<li style="float: right"><a href="${pageContext.request.contextPath}/Start/Login">Login</a></li>
+					<li style="float: right"><a href="${pageContext.request.contextPath}/Start/Register">Register</a></li>
+				</c:when>
+				<c:otherwise>
+					<li style="float: right">
+						<a href="${pageContext.request.contextPath}/Start/Logout">Logout</a>
+					</li>
+				</c:otherwise>
+			</c:choose>
+			<li style="float: right"><a
+				href="${pageContext.request.contextPath}/Start/Cart">Cart <span
+					class="badge">${empty sessionScope.cart ? 0 : sessionScope.cart.size()}</span></a></li>
+			<li style="float: right">
+				<form class="search-form"
+					onsubmit="searchBook(this,'${pageContext.request.contextPath}/Start'); return false;">
+					<input class="navbar-search-input" type="text" name="search"
+						placeholder="Search book here" aria-label="Search" /> <input
+						class="navbar-search-button" type="submit" value="Search" />
+				</form>
+			</li>
+		</ul>
+	</div>
+</jsp:root>

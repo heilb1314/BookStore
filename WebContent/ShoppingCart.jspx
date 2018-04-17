@@ -11,7 +11,7 @@
 		omit-xml-declaration="true" />
 	<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Home Page</title>
+<title>Shopping Cart</title>
 <link rel="StyleSheet"
 	href="${pageContext.request.contextPath}/res/mc.css" type="text/css"
 	title="cse4413" media="screen, print" />
@@ -21,17 +21,26 @@
 </script>
 </head>
 <body>
-	<jsp:include page="NavBar.jspx" />
-	<jsp:directive.include file="Messager.jspx" />
+	<jsp:include page="NavBar.jspx"/>
 	<div class="mc-body">
-		<h5 class="mc-title">Books:</h5>
-		<hr />
+		<h3>My Shopping Cart</h3>
+		<h4>
+			Total Price:
+			<f:formatNumber type="currency">${sessionScope.cartPrice}</f:formatNumber>
+		</h4>
 		<div class="flex-container">
-			<c:forEach var="book" items="${books}">
-				<jsp:directive.include file="BookCard.jspx" />
+			<c:forEach var="item" items="${books}">
+				<c:set var="book" value="${item.book}" />
+				<jsp:directive.include file="ShoppingItemCard.jspx" />
 			</c:forEach>
 			<jsp:include page="BookDetail.jspx" />
 		</div>
+		<c:if test="${not empty sessionScope.cart}">
+			<form action="${pageContext.request.contextPath}/Start/Payment" method="POST">
+				<input type="submit" name="submit" value="Go To Payment" />
+			</form>
+		</c:if>
+
 	</div>
 </body>
 	</html>
