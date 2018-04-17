@@ -73,21 +73,27 @@ public class Start extends HttpServlet {
 
         if (path.equals("/Start")) {
             this.handleGetHomePageRequest(request, response);
-        } else if (path.equals("/Start/Cart")) {
+        } 
+        else if (path.equals("/Start/Cart")) {
             this.handleGetShoppingCartPageRequest(request, response);
-        } else if (path.equals("/Start/Register")) {
+        } 
+        else if (path.equals("/Start/Register")) {
             this.handleGetRegisterPageRequest(request, response);
-        } else if (path.equals("/Start/Login")) {
+        } 
+        else if (path.equals("/Start/Login")) {
             this.handleGetLoginPageRequest(request, response);
-        } else if (path.equals("/Start/Logout")) {
+        } 
+        else if (path.equals("/Start/Logout")) {
             this.getModel(request).getUserModel().logout(request);
             response.sendRedirect(contextPath + "/Start");
-        } else if (path.equals("/Start/Payment")) {
+        }
+        else if (path.equals("/Start/Payment")) {
             if (!this.getModel(request).getUserModel().loggedIn(request)) {
                 request.setAttribute("errorMessage", "Please Login first!");
             }
             request.getRequestDispatcher("/Payment.jspx").forward(request, response);
-        } else if (path.equals("/Start/Analytics")) {
+        } 
+        else if (path.equals("/Start/Analytics")) {
             this.handleGetAnalyticsPageRequest(request, response);
         }
     }
