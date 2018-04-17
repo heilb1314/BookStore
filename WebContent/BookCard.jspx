@@ -12,8 +12,7 @@
 	<div class="book card">
 		<form action="" method="POST"
 			onsubmit="return validateShoppingCartItem(this);">
-			<input type="text" class="hidden" name="bid" value="${book.bid}"
-				display="none" />
+			<input type="text" class="hidden" name="bid" value="${book.bid}" display="none" />
 			<h5 class="card-title">Title: ${book.title}</h5>
 			<p class="card-subtitle">Category: ${book.category}</p>
 			<p class="card-price">
@@ -29,9 +28,8 @@
 					maxFractionDigits="1">${book.getRating()}</f:formatNumber>
 				/5
 			</p>
-			<button class="btn"
-				onclick='openModal("${book.bid}","${book.title}","${book.category}","${book.price}","${book.description}"); return false;'>View</button>
-			<input type="submit" name="submit" value="Add To Cart" />
+			<button class="btn" onclick='openModal("${book.bid}","${book.title}","${book.category}","${book.price}","${book.description}"); return false;'>View</button>
+			<input type="submit" name="submit" value="Add To Cart"/>
 		</form>
 	</div>
 </jsp:root>

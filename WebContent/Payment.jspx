@@ -44,8 +44,7 @@
 							<h3>Shipping Information:</h3>
 							<table>
 								<tr>
-									<td><label for="street">Street:<i class="error"
-											id="streetErr">*</i></label></td>
+									<td><label for="street">Street:<i class="error" id="streetErr">*</i></label></td>
 									<td><input type="text" name="street" value="${street}"
 										placeholder="Enter street" /></td>
 								</tr>

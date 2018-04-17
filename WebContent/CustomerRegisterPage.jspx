@@ -312,8 +312,8 @@ body, html {
 			<option value="Zaire">Zaire</option>
 			<option value="Zambia">Zambia</option>
 			<option value="Zimbabwe">Zimbabwe</option>
-		</select><br /> <h5>Postal Code:</h5> <input type="text" name="zip"  class="w3-input w3-padding-16 w3-border" placeholder="Postal Code"></input><br />
-		<h5>Phone:</h5> <input type="number" name="phone" min="0000000000" max="9999999999" class="w3-input w3-padding-16 w3-border" placeholder="Phone Number"></input><br /> 
+		</select><br/><h5>Postal Code:</h5> <input type="text" name="zip"  class="w3-input w3-padding-16 w3-border" placeholder="Postal Code"></input><br />
+		<h5>Phone:</h5><input type="number" name="phone" min="0000000000" max="9999999999" class="w3-input w3-padding-16 w3-border" placeholder="Phone Number"></input><br /> 
 		<br/><input type="submit" name="register" value="Register" class="w3-button w3-black"></input>
 	</form>
   </div>
