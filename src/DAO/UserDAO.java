@@ -66,6 +66,33 @@ public class UserDAO extends ObjectDAO {
         }
     }
 
+    /**
+     * Get User by id
+     *
+     * @param username
+     * @return
+     * @throws Exception
+     */
+    public UserBean getUserByUsername(String uname) throws Exception {
+        UserBean user = null;
+        String query = "SELECT * FROM User WHERE username = ? LIMIT 1";
+        try (Connection con = this.ds.getConnection();
+             PreparedStatement p = con.prepareStatement(query)) {
+            p.setString(1, uname);
+            ResultSet r = p.executeQuery();
+            if (r.next()) {
+                int id = r.getInt("id");
+                String username = r.getString("username");
+                String firstname = r.getString("fname");
+                String lastname = r.getString("lname");
+                UserType userType = UserType.getUserType(r.getString("user_type"));
+                user = new UserBean(id, username, firstname, lastname, userType);
+            }
+            r.close();
+            return user;
+        }
+    }
+
 
     /**
      * Log in with username and password.

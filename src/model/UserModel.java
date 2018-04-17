@@ -20,8 +20,7 @@ public class UserModel {
     /**
      * Get Session User
      *
-     * @param request
-     * Todo: Possibly define on `UserBean` instead
+     * @param request Todo: Possibly define on `UserBean` instead
      * @return
      */
     public static UserBean getUser(HttpServletRequest request) {
@@ -29,7 +28,7 @@ public class UserModel {
         return (UserBean) session.getAttribute(SESSION_KEY);
     }
 
-    public static void setUser(HttpServletRequest request, UserBean user){
+    public static void setUser(HttpServletRequest request, UserBean user) {
         request.getSession().setAttribute(SESSION_KEY, user);
     }
 
@@ -59,10 +58,11 @@ public class UserModel {
      * @param request
      * @throws Exception
      */
-    public void registerCustomerUser(String username, String firstname, String lastname, String password,
-                                     String verifiedPassword, HttpServletRequest request) throws Exception {
+    public UserBean registerCustomerUser(String username, String firstname, String lastname, String password,
+                                         String verifiedPassword, HttpServletRequest request) throws Exception {
         if (!password.equals(verifiedPassword)) throw new Exception("Passwords are not matched.");
         this.userDAO.signup(username, password, firstname, lastname, UserType.CUSTOMER);
+        return this.userDAO.getUserByUsername(username);
     }
 
     /**
@@ -88,16 +88,8 @@ public class UserModel {
      * @return
      */
     public static boolean isLoggedIn(HttpServletRequest request) {
-        try {
-
-            UserBean user = getUser(request);
-            if (user != null) {
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+        UserBean user = getUser(request);
+        return user != null && !user.isVisitor();
     }
 
     /**

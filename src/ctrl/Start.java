@@ -445,9 +445,10 @@ public class Start extends HttpServlet {
         String password = request.getParameter("password");
         String verifiedPassword = request.getParameter("verifiedPassword");
         try {
-            getBookStoreModel(request).getUserModel().registerCustomerUser(username, firstname,
+            UserBean user = getBookStoreModel(request).getUserModel().registerCustomerUser(username, firstname,
                     lastname, password, verifiedPassword,
                     request);
+            UserModel.setUser(request, user);
             //Todo (Jason): Why is this a parameter on servlet?
             this.successMessage = "User successfully registered!";
         } catch (Exception e) {
@@ -475,15 +476,19 @@ public class Start extends HttpServlet {
                                      HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        try {
-            this.getBookStoreModel(request).getUserModel().loginUser(username, password, request);
-            this.successMessage = "Welcome back " + username;
-            response.sendRedirect("/bookStore/Start");
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.errorMessage = e.getMessage();
-            this.requestAttributes.put("username", username);
-            response.sendRedirect(route);
+        if(UserModel.isLoggedIn(request)){
+            response.sendError(403, "Already logged in");
+        } else {
+            try {
+                BookStoreModel.getInstance().getUserModel().loginUser(username, password, request);
+                this.successMessage = "Welcome back " + username;
+                response.sendRedirect("/bookStore/Start");
+            } catch (Exception e) {
+                e.printStackTrace();
+                this.errorMessage = e.getMessage();
+                this.requestAttributes.put("username", username);
+                response.sendRedirect(route);
+            }
         }
     }
 
