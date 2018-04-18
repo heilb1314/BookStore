@@ -22,7 +22,6 @@ public class BookOrdersRest {
      */
     public BookOrdersRest() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     @Path("/getOrdersByBookId")
