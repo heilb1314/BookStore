@@ -35,10 +35,7 @@ public class BookBean extends JsonBean {
                     return null;
             }
         }
-
     }
-
-
     private String bid;
     private String title;
     private int price;
@@ -155,6 +152,4 @@ public class BookBean extends JsonBean {
     public String toString() {
         return String.format("Book: bid=%s, title=%s, price=%d, description=%s, category=%s, rating=%.1f", this.getBid(), this.getTitle(), this.getPrice(), this.getDescription(), this.getCategory().toString(), this.getRating());
     }
-
-
 }

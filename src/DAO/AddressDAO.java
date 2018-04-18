@@ -128,6 +128,4 @@ public class AddressDAO extends ObjectDAO {
         p.close();
         con.close();
     }
-
-
 }

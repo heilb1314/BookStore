@@ -58,7 +58,6 @@ public class ProductCatalog {
             System.out.println("Error in BookDAO");
             return null;
         }
-
     }
 
     public String getProductInfo(String id) throws Exception {

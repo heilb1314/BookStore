@@ -92,8 +92,7 @@ public class UserDAO extends ObjectDAO {
             return user;
         }
     }
-
-
+  
     /**
      * Log in with username and password.
      *
@@ -193,7 +192,6 @@ public class UserDAO extends ObjectDAO {
             con.close();
         }
     }
-
 
     /***************************/
     /******* Validations *******/
