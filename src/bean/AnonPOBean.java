@@ -35,16 +35,19 @@ public class AnonPOBean {
         private String province;
         @XmlElement
         private String zip;
+        @XmlElement
+        private PoBean.Status status;
 
         public AnonPOItem() { }
 
-        public AnonPOItem(int price, int quantity, int rating, String review, String province, String zip) {
+        public AnonPOItem(int price, int quantity, int rating, String review, String province, String zip, PoBean.Status status) {
             this.price = price;
             this.quantity = quantity;
             this.rating = rating;
             this.review = review;
             this.province = province;
             this.zip = zip;
+            this.status = status;
         }
     }
 

@@ -277,7 +277,7 @@ public class PoDAO extends ObjectDAO {
 
     public AnonPOBean getOrdersByBookId(String bookId) throws Exception {
         String query =
-                "SELECT price, quantity, rating, review, addr.province, addr.zip " +
+                "SELECT price, quantity, rating, review, addr.province, addr.zip, p.status " +
                         "FROM POItem pitem INNER JOIN PO p on pitem.id = p.id " +
                         "INNER JOIN Address addr on p.address=addr.id WHERE pitem.bid = ?";
         try (Connection conn = this.ds.getConnection();
@@ -291,7 +291,8 @@ public class PoDAO extends ObjectDAO {
                             r.getInt(3),
                             r.getString(4),
                             r.getString(5),
-                            r.getString(6)
+                            r.getString(6),
+                            PoBean.Status.getStatus(r.getString(7))
                     ));
                 }
 
