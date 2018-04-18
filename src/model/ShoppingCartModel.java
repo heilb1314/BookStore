@@ -71,6 +71,15 @@ public class ShoppingCartModel {
         }
         session.setAttribute("cartPrice", price);
     }
+    
+    /**
+     * Empty shopping cart
+     * 
+     * @param request
+     */
+    public void emptyCart(HttpServletRequest request) {
+    		this.updateCart(new HashMap<>(), request);
+    }
 
     /**
      * Add book with selected quantity to my cart. quantity will accumulate if book already in the cart.

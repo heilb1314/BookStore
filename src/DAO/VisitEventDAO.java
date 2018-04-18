@@ -16,7 +16,7 @@ import bean.VisitEventBean.VisitEventType;
 
 public class VisitEventDAO extends ObjectDAO {
 
-    private static String DATE_FORMAT = "mmddyyyy";
+    private static String DATE_FORMAT = "MMddyyyy";
 
     public VisitEventDAO() throws Exception {
         super();
@@ -25,6 +25,7 @@ public class VisitEventDAO extends ObjectDAO {
     public List<VisitEventBean> getListOfVisitEventsFromCartPurchases(Map<String, ShoppingCartItemBean> cart) {
         List<VisitEventBean> visitEvents = new ArrayList<VisitEventBean>();
         String date = new SimpleDateFormat(DATE_FORMAT).format(new Date());
+        System.out.println(date);
         for (ShoppingCartItemBean item : cart.values()) {
             visitEvents.add(new VisitEventBean(date, item.getBook(), VisitEventType.PURCHASE));
         }
@@ -32,21 +33,19 @@ public class VisitEventDAO extends ObjectDAO {
     }
 
     /**
-     * Get a list of visit events by month and year
+     * Get a list of visit events by month
      *
      * @param m
      * @return
      * @throws Exception
      */
-    public List<VisitEventBean> getListOfVisitEventsByMonthYear(int m) throws Exception {
-        if (m < 1 || m > 12)
-            throw new Exception("Invalid Month.");
-        String query = "SELECT b.*, v.day, v.eventtype FROM Book b INNER JOIN VisitEvent v ON b.bid=v.bid WHERE day LIKE ? ORDER BY v.day ASC";
+    public List<VisitEventBean> getListOfVisitEventsByMonth(int m) throws Exception {
+        String query = "SELECT b.*, v.day, v.eventtype FROM Book b INNER JOIN VisitEvent v ON b.bid=v.bid WHERE v.eventtype = 'PURCHASE' and day LIKE ? ORDER BY v.day ASC";
 
         try (Connection con = this.ds.getConnection();
              PreparedStatement p = con.prepareStatement(query)) {
 
-            p.setString(1, String.format("%2d%%", m));
+            p.setString(1, String.format("%02d%%", m));
             ResultSet r = p.executeQuery();
             List<VisitEventBean> results = new ArrayList<>();
             BookDAO bookDAO = new BookDAO();

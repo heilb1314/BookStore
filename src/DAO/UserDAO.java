@@ -1,14 +1,10 @@
 package DAO;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import java.security.SecureRandom;
-
-import bean.AddressBean;
 import bean.UserBean;
 import bean.UserType;
 
@@ -127,7 +123,7 @@ public class UserDAO extends ObjectDAO {
 
             if (user == null) throw new Exception("Username doesn't exist.");
 
-            String hashedPassword = this.hash(password);
+            String hashedPassword = UserDAO.hash(password);
             System.out.println("pass: " + hashedPassword);
             System.out.println("saved pass: " + dbPassword);
 
@@ -179,7 +175,7 @@ public class UserDAO extends ObjectDAO {
             // hash password
 
 
-            String hashedPassword = this.hash(password);
+            String hashedPassword = UserDAO.hash(password);
 
             // insert user
             p2.setString(1, username);

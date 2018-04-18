@@ -270,6 +270,26 @@ public class BookStoreModel {
         if (!user.isAdmin()) throw new Exception("No Permission!");
         return this.poDAO.getPurchaseStats();
     }
+    
+    /**
+     * Get monthly purchase statistics
+     * @param month
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    public List<VisitEventBean> retrieveMonthlyPurchaseStatistics(String month, HttpServletRequest request) throws Exception {
+        UserBean user = UserModel.getOrSetUser(request);
+        if (!user.isAdmin()) throw new Exception("No Permission!");
+        int m;
+        try {
+			m = Integer.parseInt(month);
+			if(m < 1 || m > 12) throw new Exception();
+		} catch (Exception e) {
+			throw new Exception("Invalid Month");
+		}
+        return this.visitEventDAO.getListOfVisitEventsByMonth(m);
+    }
 
     /**
      * Rate a book
