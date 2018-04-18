@@ -57,6 +57,14 @@ public class BookStoreModel {
         return this.userModel;
     }
 
+    public PoDAO getPoDAO() {
+        return poDAO;
+    }
+
+    public void setPoDAO(PoDAO poDAO) {
+        this.poDAO = poDAO;
+    }
+
     /**
      * Get shopping cart model
      *

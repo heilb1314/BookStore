@@ -18,7 +18,7 @@ public class ProductCatalog {
     private static String category;
     private static String author;
 
-    public ProductCatalog() throws ClassNotFoundException {
+    public ProductCatalog() {
             dataSource = DBConnection.getInstance();
     }
 
