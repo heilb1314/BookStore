@@ -1,20 +1,16 @@
 package DAO;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import java.security.SecureRandom;
-
-import bean.AddressBean;
 import bean.UserBean;
 import bean.UserType;
 
 public class UserDAO extends ObjectDAO {
 
-    public UserDAO() throws Exception {
+    public UserDAO() {
         super();
     }
 
@@ -67,6 +63,33 @@ public class UserDAO extends ObjectDAO {
     }
 
     /**
+     * Get User by id
+     *
+     * @param username
+     * @return
+     * @throws Exception
+     */
+    public UserBean getUserByUsername(String uname) throws Exception {
+        UserBean user = null;
+        String query = "SELECT * FROM User WHERE username = ? LIMIT 1";
+        try (Connection con = this.ds.getConnection();
+             PreparedStatement p = con.prepareStatement(query)) {
+            p.setString(1, uname);
+            ResultSet r = p.executeQuery();
+            if (r.next()) {
+                int id = r.getInt("id");
+                String username = r.getString("username");
+                String firstname = r.getString("fname");
+                String lastname = r.getString("lname");
+                UserType userType = UserType.getUserType(r.getString("user_type"));
+                user = new UserBean(id, username, firstname, lastname, userType);
+            }
+            r.close();
+            return user;
+        }
+    }
+  
+    /**
      * Log in with username and password.
      *
      * @param username
@@ -100,7 +123,7 @@ public class UserDAO extends ObjectDAO {
 
             if (user == null) throw new Exception("Username doesn't exist.");
 
-            String hashedPassword = this.hash(password);
+            String hashedPassword = UserDAO.hash(password);
             System.out.println("pass: " + hashedPassword);
             System.out.println("saved pass: " + dbPassword);
 
@@ -123,7 +146,7 @@ public class UserDAO extends ObjectDAO {
      * @param userType
      * @throws Exception
      */
-    public void signup(String username, String password, String fname, String lname, String userType) throws Exception {
+    public void signup(String username, String password, String fname, String lname, UserType userType) throws Exception {
 
         // validations
         this.validateUsername(username);
@@ -152,7 +175,7 @@ public class UserDAO extends ObjectDAO {
             // hash password
 
 
-            String hashedPassword = this.hash(password);
+            String hashedPassword = UserDAO.hash(password);
 
             // insert user
             p2.setString(1, username);

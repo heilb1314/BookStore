@@ -13,7 +13,6 @@ public class BookDAO extends ObjectDAO {
 
     public BookDAO() throws ClassNotFoundException {
         super();
-
     }
 
     /**

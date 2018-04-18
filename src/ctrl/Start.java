@@ -15,15 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import bean.BookBean;
-import bean.BookReviewBean;
-import bean.ShoppingCartItemBean;
-import bean.VisitEventBean;
+import bean.*;
 import javafx.util.Pair;
 import listener.NewPurchase;
 import model.BookStoreModel;
@@ -37,9 +29,76 @@ import model.UserModel;
 @MultipartConfig
 public class Start extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private String successMessage = "";
-    private String errorMessage = "";
-    private Map<String, Object> requestAttributes = new HashMap<>();
+    private static final String SUCCESS_MESSAGE_ID = "successMessage";
+    private static final String ERROR_MESSAGE_ID = "errorMessage";
+    private static final String CARRY_FORWARD_ATTRIBUTES_ID = "carryForwardAttribute";
+    
+    /**
+     * Transfer carry forward session attributes to request scope
+     * 
+     * @param request
+     */
+    private static void transferAttributesToRequestScope(HttpServletRequest request) {
+    		Map<String, Object> attributes = getCarryForwardAttributes(request);
+    		if(attributes != null) {
+    			// set possible request attributes
+    	        for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+    	            request.setAttribute(entry.getKey(), entry.getValue());
+    	        }
+    		}
+    }
+    
+    /**
+     * Get the carry forward attributes
+     * @param request
+     * @return
+     */
+    private static Map<String, Object> getCarryForwardAttributes(HttpServletRequest request) {
+	    	@SuppressWarnings("unchecked")
+			Map<String, Object> attributes = (Map<String, Object>) request.getSession().getAttribute(CARRY_FORWARD_ATTRIBUTES_ID);
+		if(attributes == null) {
+			attributes = new HashMap<>();
+		}
+		return attributes;
+    }
+    
+    /**
+     * Set success message to carry forward attributes
+     * @param message
+     * @param request
+     */
+    private static void setSuccessMessage(String message, HttpServletRequest request) {
+    		getCarryForwardAttributes(request).put(SUCCESS_MESSAGE_ID, message);
+    }
+	
+    /**
+     * Set error message to carry forward attributes
+     * @param message
+     * @param request
+     */
+	private static void setErrorMessage(String message, HttpServletRequest request) {
+		getCarryForwardAttributes(request).put(ERROR_MESSAGE_ID, message);
+	}
+	
+	/**
+	 * Add attribute to carry forward attributes
+	 * @param key
+	 * @param value
+	 * @param request
+	 */
+	private static void addCarryForwardAttribute(String key, Object value, HttpServletRequest request) {
+		Map<String, Object> attributes = getCarryForwardAttributes(request);
+		attributes.put(key, value);
+		request.getSession().setAttribute(CARRY_FORWARD_ATTRIBUTES_ID, attributes);
+	} 
+	
+	/**
+	 * Clean up carry forward attributes
+	 * @param request
+	 */
+	private static void cleanupCarryForwardAttributes(HttpServletRequest request) {
+		request.getSession().setAttribute(CARRY_FORWARD_ATTRIBUTES_ID, new HashMap<String, Object>());
+	}
 
     public Start() {
         super();
@@ -58,18 +117,9 @@ public class Start extends HttpServlet {
         String contextPath = request.getContextPath();
         String path = request.getRequestURI().substring(request.getContextPath().length());
 
-        // set message attribute
-        if (this.errorMessage != null && !this.errorMessage.isEmpty()) {
-            request.setAttribute("errorMessage", this.errorMessage);
-        } else if (this.successMessage != null && !this.successMessage.isEmpty()) {
-            request.setAttribute("successMessage", this.successMessage);
-        }
-        // set possible request attributes
-        for (Map.Entry<String, Object> entry : this.requestAttributes.entrySet()) {
-            request.setAttribute(entry.getKey(), entry.getValue());
-        }
-
-        this.resetAttributes();
+        // transfer possible carry forward attributes to request scope
+        transferAttributesToRequestScope(request);
+        cleanupCarryForwardAttributes(request);
 
         if (path.equals("/Start")) {
             this.handleGetHomePageRequest(request, response);
@@ -82,13 +132,11 @@ public class Start extends HttpServlet {
         } 
         else if (path.equals("/Start/Login")) {
             this.handleGetLoginPageRequest(request, response);
-        } 
-        else if (path.equals("/Start/Logout")) {
-            this.getModel(request).getUserModel().logout(request);
+        } else if (path.equals("/Start/Logout")) {
+            BookStoreModel.getInstance().getUserModel().logout(request);
             response.sendRedirect(contextPath + "/Start");
-        }
-        else if (path.equals("/Start/Payment")) {
-            if (!this.getModel(request).getUserModel().loggedIn(request)) {
+        } else if (path.equals("/Start/Payment")) {
+            if (!UserModel.isLoggedIn(request)) {
                 request.setAttribute("errorMessage", "Please Login first!");
             }
             request.getRequestDispatcher("/Payment.jspx").forward(request, response);
@@ -106,7 +154,7 @@ public class Start extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        this.resetAttributes();
+        cleanupCarryForwardAttributes(request);
 
         String contextPath = request.getContextPath();
         String path = request.getRequestURI().substring(request.getContextPath().length());
@@ -149,30 +197,12 @@ public class Start extends HttpServlet {
     }
 
     /**
-     * Clean up messages and request attributes
-     */
-    private void resetAttributes() {
-        this.successMessage = "";
-        this.errorMessage = "";
-        this.requestAttributes.clear();
-    }
-
-    /**
      * Get Book store model
      *
      * @return
      */
-    private BookStoreModel getModel(HttpServletRequest request) {
-        BookStoreModel model = (BookStoreModel) request.getSession().getAttribute("model");
-        if (model == null) {
-            model = new BookStoreModel();
-            request.getSession().setAttribute("model", model);
-        }
-        return model;
-    }
-
-    private void setModel(HttpServletRequest request, BookStoreModel model){
-        request.getSession().setAttribute("model", model);
+    private static BookStoreModel getBookStoreModel(HttpServletRequest request) {
+        return BookStoreModel.getInstance();
     }
 
     /**
@@ -196,18 +226,18 @@ public class Start extends HttpServlet {
     private void savePurchaseFormInfo(String street, String province, String country, String zip, String phone,
                                       String sameAddress, String bstreet, String bprovince, String bcountry, String bzip, String firstname,
                                       String lastname, HttpServletRequest request) {
-        this.requestAttributes.put("street", street);
-        this.requestAttributes.put("province", province);
-        this.requestAttributes.put("country", country);
-        this.requestAttributes.put("zip", zip);
-        this.requestAttributes.put("phone", phone);
-        this.requestAttributes.put("sameAddress", sameAddress);
-        this.requestAttributes.put("bstreet", bstreet);
-        this.requestAttributes.put("bprovince", bprovince);
-        this.requestAttributes.put("bcountry", bcountry);
-        this.requestAttributes.put("bzip", bzip);
-        this.requestAttributes.put("firstname", firstname);
-        this.requestAttributes.put("lastname", lastname);
+    		addCarryForwardAttribute("street", street, request);
+        addCarryForwardAttribute("province", province, request);
+        addCarryForwardAttribute("country", country, request);
+        addCarryForwardAttribute("zip", zip, request);
+        addCarryForwardAttribute("phone", phone, request);
+        addCarryForwardAttribute("sameAddress", sameAddress, request);
+        addCarryForwardAttribute("bstreet", bstreet, request);
+        addCarryForwardAttribute("bprovince", bprovince, request);
+        addCarryForwardAttribute("bcountry", bcountry, request);
+        addCarryForwardAttribute("bzip", bzip, request);
+        addCarryForwardAttribute("firstname", firstname, request);
+        addCarryForwardAttribute("lastname", lastname, request);
     }
 
     /**
@@ -225,10 +255,10 @@ public class Start extends HttpServlet {
         List<BookBean> books = null;
         try {
             if (bookQueryTitle != null) {
-                books = this.getModel(request).retrieveBooksByTitle(bookQueryTitle);
+				books = BookStoreModel.getInstance().retrieveBooksByTitle(bookQueryTitle);
             } else {
                 BookBean.Category c = BookBean.Category.getCategory(bookQueryCategory);
-                books = this.getModel(request).retrieveBooksByCategory(c);
+                books = BookStoreModel.getInstance().retrieveBooksByCategory(c);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -248,7 +278,7 @@ public class Start extends HttpServlet {
     public void handleGetShoppingCartPageRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<ShoppingCartItemBean> books = new ArrayList<ShoppingCartItemBean>(
-                this.getModel(request).getCartModel().getMyCart(request).values());
+        		BookStoreModel.getInstance().getCartModel().getMyCart(request).values());
         request.setAttribute("books", books);
         request.getRequestDispatcher("/ShoppingCart.jspx").forward(request, response);
     }
@@ -279,6 +309,15 @@ public class Start extends HttpServlet {
         request.getRequestDispatcher("/Login.jspx").forward(request, response);
     }
 
+    private UserBean getOrSetUser(HttpServletRequest request) {
+        UserBean user = UserModel.getUser(request);
+        if (user == null) {
+            user = UserBean.newVisitor();
+            UserModel.setUser(request, user);
+        }
+        return user;
+    }
+
     /**
      * Go to analytics page
      *
@@ -290,7 +329,7 @@ public class Start extends HttpServlet {
     private void handleGetAnalyticsPageRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            if (!this.getModel(request).getUserModel().isAdmin(request))
+            if (!getOrSetUser(request).isAdmin())
                 throw new Exception("Permission Denied!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -313,10 +352,10 @@ public class Start extends HttpServlet {
         String rating = request.getParameter("rating");
         String review = request.getParameter("review");
         try {
-            this.getModel(request).rateBook(bid, rating, review, request);
-            this.successMessage = "Review successfully submitted!";
+			BookStoreModel.getInstance().rateBook(bid, rating, review, request);
+            setSuccessMessage("Review successfully submitted!", request);
         } catch (Exception e) {
-            this.errorMessage = e.getMessage();
+            setErrorMessage(e.getMessage(), request);
         }
         response.sendRedirect(route);
     }
@@ -337,7 +376,7 @@ public class Start extends HttpServlet {
             System.out.println("handling Ajax request!");
             if (routine.equals("Analytics")) {
                 // get popular books list for ajax request
-                if (!this.getModel(request).getUserModel().isAdmin(request))
+                if (!getOrSetUser(request).isAdmin())
                     throw new Exception("Permission Denied!");
                 @SuppressWarnings("unchecked")
                 List<NewPurchase.Book> popularBooks = (List<NewPurchase.Book>) request.getServletContext()
@@ -353,7 +392,7 @@ public class Start extends HttpServlet {
                 System.out.println("receive book review fetch request bid=" + bid);
                 if (bid == null || bid.isEmpty())
                     throw new Exception("Must provide Book id.");
-                List<BookReviewBean> reviews = this.getModel(request).retrieveBookReviewsByBookId(bid);
+				List<BookReviewBean> reviews = BookStoreModel.getInstance().retrieveBookReviewsByBookId(bid);
                 System.out.println("review: " + reviews);
                 json = BookStoreUtil.constructAjaxResponse(reviews);
                 System.out.println(json.toString());
@@ -385,10 +424,10 @@ public class Start extends HttpServlet {
             String bid = request.getParameter("bid");
             String quantityStr = request.getParameter("quantity");
             try {
-                this.getModel(request).getCartModel().addToCart(bid, quantityStr, request);
+                BookStoreModel.getInstance().getCartModel().addToCart(bid, quantityStr, request);
             } catch (Exception e) {
                 e.printStackTrace();
-                this.errorMessage = e.getMessage();
+                setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Submit Review")) {
@@ -413,11 +452,11 @@ public class Start extends HttpServlet {
             // Remove a book from cart
             String bid = request.getParameter("bid");
             try {
-                this.getModel(request).getCartModel().removeFromCart(bid, request);
-                this.successMessage = "Item successfully removed!";
+				BookStoreModel.getInstance().getCartModel().removeFromCart(bid, request);
+                setSuccessMessage("Item successfully removed!", request);
             } catch (Exception e) {
                 e.printStackTrace();
-                this.errorMessage = e.getMessage();
+                setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Update")) {
@@ -425,11 +464,11 @@ public class Start extends HttpServlet {
             String bid = request.getParameter("bid");
             String quantityStr = request.getParameter("quantity");
             try {
-                this.getModel(request).getCartModel().updateCartItemQuantity(bid, quantityStr, request);
-                this.successMessage = "Item successfully updated!";
+				BookStoreModel.getInstance().getCartModel().updateCartItemQuantity(bid, quantityStr, request);
+                setSuccessMessage("Item successfully updated!", request);
             } catch (Exception e) {
                 e.printStackTrace();
-                this.errorMessage = e.getMessage();
+                setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Submit Review")) {
@@ -455,18 +494,21 @@ public class Start extends HttpServlet {
         String password = request.getParameter("password");
         String verifiedPassword = request.getParameter("verifiedPassword");
         try {
-            this.getModel(request).getUserModel().registerUser(username, firstname, lastname, password, verifiedPassword,
-                    request);
-            this.successMessage = "User successfully registered!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            // setup error message and store form info
-            this.errorMessage = e.getMessage();
-            this.requestAttributes.put("username", username);
-            this.requestAttributes.put("firstname", username);
-            this.requestAttributes.put("lastname", username);
-        }
-        response.sendRedirect(route);
+	    		if(UserModel.isLoggedIn(request)) throw new Exception("Already logged in");
+	    		UserBean user = BookStoreModel.getInstance().getUserModel().registerCustomerUser(username, firstname,
+                        lastname, password, verifiedPassword,
+                        request);
+            UserModel.setUser(request, user);
+	        setSuccessMessage("User successfully registered!", request);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        // setup error message and store form info
+	        setErrorMessage(e.getMessage(), request);
+	        addCarryForwardAttribute("username", username, request);
+	        addCarryForwardAttribute("firstname", firstname, request);
+	        addCarryForwardAttribute("lastname", lastname, request);
+	    }
+	    response.sendRedirect(route);
     }
 
     /**
@@ -484,15 +526,16 @@ public class Start extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         try {
-            this.getModel(request).getUserModel().loginUser(username, password, request);
-            this.successMessage = "Welcome back " + username;
-            response.sendRedirect("/bookStore/Start");
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.errorMessage = e.getMessage();
-            this.requestAttributes.put("username", username);
-            response.sendRedirect(route);
-        }
+	    		if(UserModel.isLoggedIn(request)) throw new Exception("Already logged in");
+	        BookStoreModel.getInstance().getUserModel().loginUser(username, password, request);
+	        setSuccessMessage("Welcome back " + username, request);
+	        response.sendRedirect("/bookStore/Start");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        setErrorMessage(e.getMessage(), request);
+	        addCarryForwardAttribute("username", username, request);
+	        response.sendRedirect(route);
+	    }
     }
 
     /**
@@ -533,19 +576,19 @@ public class Start extends HttpServlet {
             String cvc = request.getParameter("cvc");
 
             try {
-                BookStoreModel model = this.getModel(request);
+                BookStoreModel model = BookStoreModel.getInstance();
                 model.processPo(street, province, country, zip, phone, bstreet, bprovince, bcountry, bzip,
                         firstname, lastname, cardNumber, month, year, cvc, request);
-                this.successMessage = "Order Successfully Completed!";
+                setSuccessMessage("Order Successfully Completed!", request);
                 List<VisitEventBean> visitEvents = model.retrieveVisitEventsFromShoppingCart(request);
                 model.addVisitEvents(visitEvents);
-                this.requestAttributes.put("newPurchase", visitEvents);
-                model.getCartModel().updateCart(new HashMap<String, ShoppingCartItemBean>(), request);
+                addCarryForwardAttribute("newPurchase", visitEvents, request);
+                model.getCartModel().emptyCart(request);
             } catch (Exception e) {
                 e.printStackTrace();
                 this.savePurchaseFormInfo(street, province, country, zip, phone, sameAddress, bstreet, bprovince,
                         bcountry, bzip, firstname, lastname, request);
-                this.errorMessage = e.getMessage();
+                setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Go To Payment")) {
@@ -568,28 +611,25 @@ public class Start extends HttpServlet {
                                          HttpServletResponse response) throws ServletException, IOException {
         if (submit.equals("Get Statistics")) {
             try {
-                List<Pair<Integer, String>> results = this.getModel(request).retrieveUserPurchaseStatistics(request);
+                List<Pair<Integer, String>> results = BookStoreModel.getInstance().retrieveUserPurchaseStatistics(request);
                 request.getSession().setAttribute("stats", results);
             } catch (Exception e) {
                 e.printStackTrace();
-                this.errorMessage = e.getMessage();
+                setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
+        } else if (submit.equals("Get Monthly Report")) {
+        		try {
+        			String month = request.getParameter("month");
+        			List<VisitEventBean> results = getBookStoreModel(request).retrieveMonthlyPurchaseStatistics(month, request);
+        			request.getSession().setAttribute("monthlyStats", results);
+        		} catch (Exception e) {
+        			e.printStackTrace();
+        			setErrorMessage(e.getMessage(), request);
+        		}
+        		response.sendRedirect(route);
         }
     }
 
 
 }
-
-//// Object to XML
-// JAXBContext jaxbContext = JAXBContext.newInstance(BookListWrapper.class); //
-// instantiate a context
-// Marshaller marshaller = jaxbContext.createMarshaller(); // create a
-// marshaller
-// marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-// StringWriter sw = new StringWriter(); // standard IO
-// sw.write("\n");
-// model.BookListWrapper wrapper = new model.BookListWrapper(c, books);
-// marshaller.marshal(wrapper, new StreamResult(sw));
-
-// System.out.println(sw.toString()); // for debugging

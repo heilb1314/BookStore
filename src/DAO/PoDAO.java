@@ -3,17 +3,9 @@ package DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import bean.AddressBean;
-import bean.BookBean;
-import bean.BookReviewBean;
-import bean.PoBean;
-import bean.PoItemBean;
-import bean.ShoppingCartItemBean;
+import bean.*;
 import javafx.util.Pair;
 import listener.NewPurchase;
 
@@ -62,7 +54,7 @@ public class PoDAO extends ObjectDAO {
      * @return
      * @throws Exception
      */
-    public List<BookReviewBean> getBookReviewById(String bid) throws Exception {
+    public List<BookReviewBean> getBookReviewsById(String bid) throws Exception {
         List<BookReviewBean> reviews = new ArrayList<BookReviewBean>();
         String query = "SELECT poi.rating, poi.review FROM POItem poi INNER JOIN PO p ON poi.id=p.id AND p.status='ORDERED' INNER JOIN book b ON poi.bid=b.bid WHERE poi.bid=? AND poi.rating>0 ORDER BY poi.id DESC";
         try (Connection con = this.ds.getConnection();
@@ -246,11 +238,11 @@ public class PoDAO extends ObjectDAO {
      * @throws Exception
      */
     public List<Pair<Integer, String>> getPurchaseStats() throws Exception {
-        String query = "SELECT p.uid, a.zip, SUM(pi.price) AS total_spent FROM poitem pi INNER JOIN po p ON pi.id=p.id INNER JOIN address a ON p.address=a.id WHERE p.status='ORDERED' GROUP BY p.uid, a.zip";
+        String query = "SELECT p.uid, a.zip, SUM(pi.price) AS total_spent FROM POItem pi INNER JOIN PO p ON pi.id=p.id INNER JOIN Address a ON p.address=a.id WHERE p.status='ORDERED' GROUP BY p.uid, a.zip";
         try (Connection con = this.ds.getConnection();
              PreparedStatement p = con.prepareStatement(query);
              ResultSet r = p.executeQuery()) {
-            List<Pair<Integer, String>> results = new ArrayList<>();
+            List<Pair<Integer, String>> results = new LinkedList<>();
             while (r.next()) {
                 String uid = r.getString("uid");
                 String zip = r.getString("zip");
@@ -280,6 +272,32 @@ public class PoDAO extends ObjectDAO {
             p.setString(1, status.toString());
             p.setInt(2, pid);
             p.executeUpdate();
+        }
+    }
+
+    public AnonPOBean getOrdersByBookId(String bookId) throws Exception {
+        String query =
+                "SELECT price, quantity, rating, review, addr.province, addr.zip, p.status " +
+                        "FROM POItem pitem INNER JOIN PO p on pitem.id = p.id " +
+                        "INNER JOIN Address addr on p.address=addr.id WHERE pitem.bid = ?";
+        try (Connection conn = this.ds.getConnection();
+             PreparedStatement p = conn.prepareStatement(query)){
+            p.setString(1, bookId);
+            List<AnonPOBean.AnonPOItem> out = new LinkedList<>();
+            try(ResultSet r = p.executeQuery()){
+                while(r.next()) {
+                    out.add(new AnonPOBean.AnonPOItem(r.getInt(1),
+                            r.getInt(2),
+                            r.getInt(3),
+                            r.getString(4),
+                            r.getString(5),
+                            r.getString(6),
+                            PoBean.Status.getStatus(r.getString(7))
+                    ));
+                }
+
+            }
+            return new AnonPOBean(bookId, out);
         }
     }
 }

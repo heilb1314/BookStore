@@ -1,5 +1,9 @@
 package bean;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.xml.bind.annotation.XmlEnum;
@@ -44,6 +48,16 @@ public class VisitEventBean extends JsonBean {
 
     public String getDay() {
         return day;
+    }
+    
+    public String getFormattedDate() {
+    		String date = this.getDay();
+    		try {
+				date = new SimpleDateFormat("MMM d, yyyy").format(new SimpleDateFormat("MMddyyyy").parse(this.getDay()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+    		return date;
     }
 
     public void setDay(String day) {

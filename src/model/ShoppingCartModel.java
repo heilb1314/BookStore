@@ -12,6 +12,8 @@ import bean.ShoppingCartItemBean;
 
 public class ShoppingCartModel {
 
+    private static final String SESSION_KEY = "shopping_cart";
+
     public ShoppingCartModel() {
         // TODO Auto-generated constructor stub
     }
@@ -68,6 +70,15 @@ public class ShoppingCartModel {
             price += item.getPrice();
         }
         session.setAttribute("cartPrice", price);
+    }
+    
+    /**
+     * Empty shopping cart
+     * 
+     * @param request
+     */
+    public void emptyCart(HttpServletRequest request) {
+    		this.updateCart(new HashMap<>(), request);
     }
 
     /**

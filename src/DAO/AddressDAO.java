@@ -10,7 +10,7 @@ import bean.AddressBean;
 public class AddressDAO extends ObjectDAO {
 
     public AddressDAO() throws Exception {
-        super();
+
     }
 
     /**
