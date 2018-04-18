@@ -452,7 +452,6 @@ public class Start extends HttpServlet {
                         lastname, password, verifiedPassword,
                         request);
                 UserModel.setUser(request, user);
-                //Todo (Jason): Why is this a parameter on servlet?
                 this.successMessage = "User successfully registered!";
             } catch (Exception e) {
                 e.printStackTrace();
