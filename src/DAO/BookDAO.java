@@ -141,6 +141,4 @@ public class BookDAO extends ObjectDAO {
         }
         return rv;
     }
-
-
 }

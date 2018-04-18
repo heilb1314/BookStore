@@ -20,11 +20,8 @@
 </script>
 </head>
 <body>
-
-
-
 	<jsp:directive.include file="NavBar.jspx" />
-	<jsp:directive.include file="Messager.jspx" />
+	<jsp:directive.include file="Messager.jspx"/>
 	<c:if test="${empty errorMessage}">
 		<form action="" method="post" id="aForm">
 			<label>Choose Month:</label> <select name="monthlist" form="aForm"
@@ -41,8 +38,7 @@
 				<option value="november">November</option>
 				<option value="december">December</option>
 			</select>
-			<button id="generate" name="generate" action="submit" value="1">Generate
-				Report</button>
+			<button id="generate" name="generate" action="submit" value="1">Generate Report</button>
 		</form>
 		<c:if test="${not empty sessionScope['monthBooks']}">
 			<label>Books sold each Month:</label>

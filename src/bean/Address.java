@@ -65,6 +65,4 @@ public class Address {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
-
 }

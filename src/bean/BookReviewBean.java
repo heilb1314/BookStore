@@ -34,5 +34,4 @@ public class BookReviewBean extends JsonBean {
                 .add("rating", this.getRating())
                 .add("review", this.getReview());
     }
-
 }

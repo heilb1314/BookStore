@@ -72,5 +72,4 @@ public class VisitEventBean extends JsonBean {
                 .add("book", this.getBook().toJsonObjectBuilder())
                 .add("eventType", this.getEventType().toString());
     }
-
 }

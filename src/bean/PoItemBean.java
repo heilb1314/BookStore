@@ -92,5 +92,4 @@ public class PoItemBean {
     public void setReview(String review) {
         this.review = review;
     }
-
 }

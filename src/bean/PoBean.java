@@ -104,5 +104,4 @@ public class PoBean {
     public void setUser(UserBean user) {
         this.user = user;
     }
-
 }

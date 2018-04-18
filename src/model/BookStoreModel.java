@@ -303,7 +303,6 @@ public class BookStoreModel {
     /* validations */
 
     /***************/
-
     private void validateShoppingCart(HttpServletRequest request) throws Exception {
         Map<String, ShoppingCartItemBean> cart = this.getCartModel().getMyCart(request);
         if (cart == null || cart.isEmpty()) throw new Exception("No Item to purchase!");
@@ -347,5 +346,4 @@ public class BookStoreModel {
         if (cvc == null || cvc.length() < 3 || cvc.length() > 4 || !cvc.matches("^[0-9]+$"))
             throw new Exception("Invalid CVV");
     }
-
 }

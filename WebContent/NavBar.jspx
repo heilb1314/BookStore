@@ -17,8 +17,7 @@
 				<div class="dropdown-content">
 					<a href="${pageContext.request.contextPath}/Start?category=science">Science</a>
 					<a href="${pageContext.request.contextPath}/Start?category=fiction">Fiction</a>
-					<a
-						href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
+					<a href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
 				</div></li>
 			<c:choose>
 				<c:when test="${empty sessionScope.user}">
@@ -35,11 +34,10 @@
 				href="${pageContext.request.contextPath}/Start/Cart">Cart <span
 					class="badge">${empty sessionScope.cart ? 0 : sessionScope.cart.size()}</span></a></li>
 			<li style="float: right">
-				<form class="search-form"
-					onsubmit="searchBook(this,'${pageContext.request.contextPath}/Start'); return false;">
+				<form class="search-form" onsubmit="searchBook(this,'${pageContext.request.contextPath}/Start'); return false;">
 					<input class="navbar-search-input" type="text" name="search"
-						placeholder="Search book here" aria-label="Search" /> <input
-						class="navbar-search-button" type="submit" value="Search" />
+						placeholder="Search book here" aria-label="Search" /> 
+						<input class="navbar-search-button" type="submit" value="Search" />
 				</form>
 			</li>
 		</ul>

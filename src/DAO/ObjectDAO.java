@@ -9,5 +9,4 @@ public class ObjectDAO {
     public ObjectDAO() {
         ds = DBConnection.getInstance();
     }
-
 }
