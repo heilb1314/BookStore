@@ -487,8 +487,7 @@ public class Start extends HttpServlet {
             try {
                 BookStoreModel.getInstance().getUserModel().loginUser(username, password, request);
                 this.successMessage = "Welcome back " + username;
-//                response.sendRedirect("/bookStore/Start");
-                response.sendRedirect(route);
+                response.sendRedirect("/bookStore/Start");
             } catch (Exception e) {
                 e.printStackTrace();
                 this.errorMessage = e.getMessage();
