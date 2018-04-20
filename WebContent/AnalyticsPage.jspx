@@ -23,7 +23,7 @@
 	<jsp:directive.include file="NavBar.jspx" />
 	<jsp:directive.include file="Messager.jspx" />
 	<div class="mc-body">
-		<c:if test="${empty sessionScope.errorMessage}">
+		<c:if test="${not empty sessionScope.user and not sessionScope.user.isVisitor()}">
 			<h4>Top 10 Selling Books</h4>
 			<div class="ttable-div">
 				<table id="popularBooksTable" class="ttable" style="display: none;">
@@ -103,12 +103,12 @@
 					</div>
 				</c:if>
 			</div>
+			<script>
+				fetchTop10Purchases();
+				setInterval(fetchTop10Purchases, 3000);
+			</script>
 		</c:if>
 	</div>
-	<script>
-		fetchTop10Purchases();
-		setInterval(fetchTop10Purchases, 3000);
-	</script>
 </body>
 	</html>
 </jsp:root>

@@ -10,7 +10,7 @@ USE book_store;
 DROP TABLE IF EXISTS User;
 CREATE TABLE User (
   id        INT UNSIGNED                                     NOT NULL AUTO_INCREMENT,
-  username  VARCHAR(50)                                      NOT NULL UNIQUE,
+  username  VARCHAR(20)                                      NOT NULL UNIQUE,
   password  CHAR(50)                                         NOT NULL,
   lname     VARCHAR(20)                                      NOT NULL,
   fname     VARCHAR(20)                                      NOT NULL,

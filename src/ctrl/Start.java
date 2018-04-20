@@ -2,9 +2,7 @@ package ctrl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.json.JsonObject;
 import javax.servlet.ServletConfig;
@@ -20,6 +18,7 @@ import javafx.util.Pair;
 import listener.NewPurchase;
 import model.BookStoreModel;
 import model.BookStoreUtil;
+import model.SessionAttributeManager;
 import model.UserModel;
 
 /**
@@ -29,76 +28,6 @@ import model.UserModel;
 @MultipartConfig
 public class Start extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String SUCCESS_MESSAGE_ID = "successMessage";
-    private static final String ERROR_MESSAGE_ID = "errorMessage";
-    private static final String CARRY_FORWARD_ATTRIBUTES_ID = "carryForwardAttribute";
-    
-    /**
-     * Transfer carry forward session attributes to request scope
-     * 
-     * @param request
-     */
-    private static void transferAttributesToRequestScope(HttpServletRequest request) {
-    		Map<String, Object> attributes = getCarryForwardAttributes(request);
-    		if(attributes != null) {
-    			// set possible request attributes
-    	        for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-    	            request.setAttribute(entry.getKey(), entry.getValue());
-    	        }
-    		}
-    }
-    
-    /**
-     * Get the carry forward attributes
-     * @param request
-     * @return
-     */
-    private static Map<String, Object> getCarryForwardAttributes(HttpServletRequest request) {
-	    	@SuppressWarnings("unchecked")
-			Map<String, Object> attributes = (Map<String, Object>) request.getSession().getAttribute(CARRY_FORWARD_ATTRIBUTES_ID);
-		if(attributes == null) {
-			attributes = new HashMap<>();
-		}
-		return attributes;
-    }
-    
-    /**
-     * Set success message to carry forward attributes
-     * @param message
-     * @param request
-     */
-    private static void setSuccessMessage(String message, HttpServletRequest request) {
-    		getCarryForwardAttributes(request).put(SUCCESS_MESSAGE_ID, message);
-    }
-	
-    /**
-     * Set error message to carry forward attributes
-     * @param message
-     * @param request
-     */
-	private static void setErrorMessage(String message, HttpServletRequest request) {
-		getCarryForwardAttributes(request).put(ERROR_MESSAGE_ID, message);
-	}
-	
-	/**
-	 * Add attribute to carry forward attributes
-	 * @param key
-	 * @param value
-	 * @param request
-	 */
-	private static void addCarryForwardAttribute(String key, Object value, HttpServletRequest request) {
-		Map<String, Object> attributes = getCarryForwardAttributes(request);
-		attributes.put(key, value);
-		request.getSession().setAttribute(CARRY_FORWARD_ATTRIBUTES_ID, attributes);
-	} 
-	
-	/**
-	 * Clean up carry forward attributes
-	 * @param request
-	 */
-	private static void cleanupCarryForwardAttributes(HttpServletRequest request) {
-		request.getSession().setAttribute(CARRY_FORWARD_ATTRIBUTES_ID, new HashMap<String, Object>());
-	}
 
     public Start() {
         super();
@@ -118,8 +47,8 @@ public class Start extends HttpServlet {
         String path = request.getRequestURI().substring(request.getContextPath().length());
 
         // transfer possible carry forward attributes to request scope
-        transferAttributesToRequestScope(request);
-        cleanupCarryForwardAttributes(request);
+        SessionAttributeManager.transferAttributesToRequestScope(request);
+        SessionAttributeManager.cleanupCarryForwardAttributes(request);
 
         if (path.equals("/Start")) {
             this.handleGetHomePageRequest(request, response);
@@ -154,7 +83,7 @@ public class Start extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        cleanupCarryForwardAttributes(request);
+        SessionAttributeManager.cleanupCarryForwardAttributes(request);
 
         String contextPath = request.getContextPath();
         String path = request.getRequestURI().substring(request.getContextPath().length());
@@ -226,18 +155,18 @@ public class Start extends HttpServlet {
     private void savePurchaseFormInfo(String street, String province, String country, String zip, String phone,
                                       String sameAddress, String bstreet, String bprovince, String bcountry, String bzip, String firstname,
                                       String lastname, HttpServletRequest request) {
-    		addCarryForwardAttribute("street", street, request);
-        addCarryForwardAttribute("province", province, request);
-        addCarryForwardAttribute("country", country, request);
-        addCarryForwardAttribute("zip", zip, request);
-        addCarryForwardAttribute("phone", phone, request);
-        addCarryForwardAttribute("sameAddress", sameAddress, request);
-        addCarryForwardAttribute("bstreet", bstreet, request);
-        addCarryForwardAttribute("bprovince", bprovince, request);
-        addCarryForwardAttribute("bcountry", bcountry, request);
-        addCarryForwardAttribute("bzip", bzip, request);
-        addCarryForwardAttribute("firstname", firstname, request);
-        addCarryForwardAttribute("lastname", lastname, request);
+    		SessionAttributeManager.addCarryForwardAttribute("street", street, request);
+        SessionAttributeManager.addCarryForwardAttribute("province", province, request);
+        SessionAttributeManager.addCarryForwardAttribute("country", country, request);
+        SessionAttributeManager.addCarryForwardAttribute("zip", zip, request);
+        SessionAttributeManager.addCarryForwardAttribute("phone", phone, request);
+        SessionAttributeManager.addCarryForwardAttribute("sameAddress", sameAddress, request);
+        SessionAttributeManager.addCarryForwardAttribute("bstreet", bstreet, request);
+        SessionAttributeManager.addCarryForwardAttribute("bprovince", bprovince, request);
+        SessionAttributeManager.addCarryForwardAttribute("bcountry", bcountry, request);
+        SessionAttributeManager.addCarryForwardAttribute("bzip", bzip, request);
+        SessionAttributeManager.addCarryForwardAttribute("firstname", firstname, request);
+        SessionAttributeManager.addCarryForwardAttribute("lastname", lastname, request);
     }
 
     /**
@@ -353,9 +282,9 @@ public class Start extends HttpServlet {
         String review = request.getParameter("review");
         try {
 			BookStoreModel.getInstance().rateBook(bid, rating, review, request);
-            setSuccessMessage("Review successfully submitted!", request);
+            SessionAttributeManager.setSuccessMessage("Review successfully submitted!", request);
         } catch (Exception e) {
-            setErrorMessage(e.getMessage(), request);
+            SessionAttributeManager.setErrorMessage(e.getMessage(), request);
         }
         response.sendRedirect(route);
     }
@@ -427,7 +356,7 @@ public class Start extends HttpServlet {
                 BookStoreModel.getInstance().getCartModel().addToCart(bid, quantityStr, request);
             } catch (Exception e) {
                 e.printStackTrace();
-                setErrorMessage(e.getMessage(), request);
+                SessionAttributeManager.setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Submit Review")) {
@@ -453,10 +382,10 @@ public class Start extends HttpServlet {
             String bid = request.getParameter("bid");
             try {
 				BookStoreModel.getInstance().getCartModel().removeFromCart(bid, request);
-                setSuccessMessage("Item successfully removed!", request);
+                SessionAttributeManager.setSuccessMessage("Item successfully removed!", request);
             } catch (Exception e) {
                 e.printStackTrace();
-                setErrorMessage(e.getMessage(), request);
+                SessionAttributeManager.setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Update")) {
@@ -465,10 +394,10 @@ public class Start extends HttpServlet {
             String quantityStr = request.getParameter("quantity");
             try {
 				BookStoreModel.getInstance().getCartModel().updateCartItemQuantity(bid, quantityStr, request);
-                setSuccessMessage("Item successfully updated!", request);
+                SessionAttributeManager.setSuccessMessage("Item successfully updated!", request);
             } catch (Exception e) {
                 e.printStackTrace();
-                setErrorMessage(e.getMessage(), request);
+                SessionAttributeManager.setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Submit Review")) {
@@ -499,14 +428,14 @@ public class Start extends HttpServlet {
                         lastname, password, verifiedPassword,
                         request);
             UserModel.setUser(request, user);
-	        setSuccessMessage("User successfully registered!", request);
+	        SessionAttributeManager.setSuccessMessage("User successfully registered!", request);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        // setup error message and store form info
-	        setErrorMessage(e.getMessage(), request);
-	        addCarryForwardAttribute("username", username, request);
-	        addCarryForwardAttribute("firstname", firstname, request);
-	        addCarryForwardAttribute("lastname", lastname, request);
+	        SessionAttributeManager.setErrorMessage(e.getMessage(), request);
+	        SessionAttributeManager.addCarryForwardAttribute("username", username, request);
+	        SessionAttributeManager.addCarryForwardAttribute("firstname", firstname, request);
+	        SessionAttributeManager.addCarryForwardAttribute("lastname", lastname, request);
 	    }
 	    response.sendRedirect(route);
     }
@@ -528,12 +457,12 @@ public class Start extends HttpServlet {
         try {
 	    		if(UserModel.isLoggedIn(request)) throw new Exception("Already logged in");
 	        BookStoreModel.getInstance().getUserModel().loginUser(username, password, request);
-	        setSuccessMessage("Welcome back " + username, request);
+	        SessionAttributeManager.setSuccessMessage("Welcome back " + username, request);
 	        response.sendRedirect("/bookStore/Start");
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        setErrorMessage(e.getMessage(), request);
-	        addCarryForwardAttribute("username", username, request);
+	        SessionAttributeManager.setErrorMessage(e.getMessage(), request);
+	        SessionAttributeManager.addCarryForwardAttribute("username", username, request);
 	        response.sendRedirect(route);
 	    }
     }
@@ -579,16 +508,16 @@ public class Start extends HttpServlet {
                 BookStoreModel model = BookStoreModel.getInstance();
                 model.processPo(street, province, country, zip, phone, bstreet, bprovince, bcountry, bzip,
                         firstname, lastname, cardNumber, month, year, cvc, request);
-                setSuccessMessage("Order Successfully Completed!", request);
+                SessionAttributeManager.setSuccessMessage("Order Successfully Completed!", request);
                 List<VisitEventBean> visitEvents = model.retrieveVisitEventsFromShoppingCart(request);
                 model.addVisitEvents(visitEvents);
-                addCarryForwardAttribute("newPurchase", visitEvents, request);
+                SessionAttributeManager.addCarryForwardAttribute("newPurchase", visitEvents, request);
                 model.getCartModel().emptyCart(request);
             } catch (Exception e) {
                 e.printStackTrace();
                 this.savePurchaseFormInfo(street, province, country, zip, phone, sameAddress, bstreet, bprovince,
                         bcountry, bzip, firstname, lastname, request);
-                setErrorMessage(e.getMessage(), request);
+                SessionAttributeManager.setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Go To Payment")) {
@@ -615,7 +544,7 @@ public class Start extends HttpServlet {
                 request.getSession().setAttribute("stats", results);
             } catch (Exception e) {
                 e.printStackTrace();
-                setErrorMessage(e.getMessage(), request);
+                SessionAttributeManager.setErrorMessage(e.getMessage(), request);
             }
             response.sendRedirect(route);
         } else if (submit.equals("Get Monthly Report")) {
@@ -625,7 +554,7 @@ public class Start extends HttpServlet {
         			request.getSession().setAttribute("monthlyStats", results);
         		} catch (Exception e) {
         			e.printStackTrace();
-        			setErrorMessage(e.getMessage(), request);
+        			SessionAttributeManager.setErrorMessage(e.getMessage(), request);
         		}
         		response.sendRedirect(route);
         }

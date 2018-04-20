@@ -20,7 +20,7 @@
 					<a href="${pageContext.request.contextPath}/Start?category=engineering">Engineering</a>
 				</div></li>
 			<c:choose>
-				<c:when test="${empty sessionScope.user}">
+				<c:when test="${empty sessionScope.user or sessionScope.user.isVisitor()}">
 					<li style="float: right"><a href="${pageContext.request.contextPath}/Start/Login">Login</a></li>
 					<li style="float: right"><a href="${pageContext.request.contextPath}/Start/Register">Register</a></li>
 				</c:when>

@@ -194,8 +194,8 @@ public class UserDAO extends ObjectDAO {
     /***************************/
 
     private void validatePassword(String password) throws Exception {
-        if (password == null || password.length() < 6)
-            throw new Exception("Invalid Password");
+        if (password == null || password.length() < 6 || password.length() > 16)
+            throw new Exception("Invalid Password. Password must between 6 - 16 characters long.");
     }
 
 
@@ -212,7 +212,7 @@ public class UserDAO extends ObjectDAO {
     }
 
     private void validateName(String name, String label) throws Exception {
-        if (name == null || name.length() < 4) throw new Exception("Invalid " + label);
+        if (name == null || name.length() < 4 || name.length() > 20) throw new Exception("Invalid " + label + ". " + label + " must between 4 - 20 characters long.");
     }
 
     static private String hash(String password) throws Exception {
