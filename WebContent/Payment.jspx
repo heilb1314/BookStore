@@ -26,7 +26,7 @@
 	<div class="mc-body">
 		<c:choose>
 			<c:when test="${not empty successMessage}">
-				<a href="${pageContext.request.contextPath}/Start">Done</a>
+				<a href="${pageContext.request.contextPath}/Home">Done</a>
 			</c:when>
 			<c:when test="${not empty sessionScope.user and not sessionScope.user.isVisitor()}">
 				<form action="" method="POST"

@@ -41,12 +41,13 @@ function fetchAjaxRequest(method, url, formData, cb) {
 }
 
 function fetchReviews(bid) {
+	var resultTable = document.getElementById("book-detail-review-tbody");
+	if(resultTable==null) return;
 	var formData = new FormData();
 	formData.append("bid",bid);
-	fetchAjaxRequest("POST", "/bookStore/Start/Ajax/Review", formData, function(res){
+	fetchAjaxRequest("POST", "/bookStore/Ajax/Review", formData, function(res){
 		if(res.code===1){
 			var result = res.result;
-			var resultTable = document.getElementById("book-detail-review-tbody");
 			// remove previous results
 			while (resultTable.firstChild) {
 				resultTable.removeChild(resultTable.firstChild);
@@ -273,7 +274,7 @@ function fetchTop10Purchases(){
 	} else {
 		request = new ActiveXObject("Microsoft.XMLHTTP");
 	}
-	request.open("POST", "/bookStore/Start/Ajax/Analytics", true);
+	request.open("POST", "/bookStore/Ajax/Analytics", true);
 	request.onreadystatechange = function() {
 		if(request.readyState == 4 && request.status == 200) {
 			var res = JSON.parse(request.responseText);

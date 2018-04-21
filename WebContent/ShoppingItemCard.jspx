@@ -10,7 +10,7 @@
 		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
 		omit-xml-declaration="true" />
 	<div class="book card">
-		<form action="" method="POST"
+		<form method="POST"
 			onsubmit="return validateShoppingCartItem(this);">
 			<input type="text" class="hidden" name="bid" value="${book.bid}" />
 			<h5 class="card-title">Title: ${book.title}</h5>
@@ -28,8 +28,8 @@
 				<f:formatNumber type="currency">${item.price}</f:formatNumber>
 			</p>
 			<button class="btn" onclick='openModal("${book.bid}","${book.title}","${book.category}","${book.price}","${book.description}"); return false;'>View</button>
-			<input type="submit" name="submit" value="Update" />
-			<input type="submit" name="submit" value="Remove" />
+			<input type="submit" name="submit" value="Update" formaction="${pageContext.request.contextPath}/Cart/Update" />
+			<input type="submit" name="submit" value="Remove" formaction="${pageContext.request.contextPath}/Cart/Remove" />
 		</form>
 	</div>
 </jsp:root>
