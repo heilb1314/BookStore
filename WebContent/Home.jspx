@@ -21,16 +21,18 @@
 </script>
 </head>
 <body>
-	<jsp:include page="NavBar.jspx" />
-	<jsp:directive.include file="Messager.jspx" />
-	<div class="mc-body">
-		<h5 class="mc-title">Books:</h5>
-		<hr />
-		<div class="flex-container">
-			<c:forEach var="book" items="${books}">
-				<jsp:directive.include file="BookCard.jspx" />
-			</c:forEach>
-			<jsp:include page="BookDetail.jspx" />
+	<jsp:include page="partials/NavBar.jspx" />
+	<div class="mc-container">
+		<jsp:directive.include file="partials/Messager.jspx" />
+		<div class="mc-body">
+			<h5 class="mc-title">Books:</h5>
+			<hr />
+			<div class="flex-container">
+				<c:forEach var="book" items="${books}">
+					<jsp:directive.include file="partials/BookCard.jspx" />
+				</c:forEach>
+				<jsp:include page="partials/BookDetail.jspx" />
+			</div>
 		</div>
 	</div>
 </body>

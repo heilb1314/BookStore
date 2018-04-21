@@ -13,11 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import bean.ShoppingCartItemBean;
 import model.BookStoreModel;
 import model.SessionAttributeManager;
+import model.UserModel;
 
 /**
  * Servlet implementation class ShoppingCartServlet
  */
-@WebServlet({"/Cart","/Cart/Update","/Cart/Remove","/Cart/SubmitReview"})
+@WebServlet({"/Cart","/Cart/Update","/Cart/Remove","/Cart/GoToPayment"})
 public class ShoppingCartServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -56,8 +57,13 @@ public class ShoppingCartServlet extends HttpServlet {
 		case "/Cart/Update":
 			this.handlePostUpdateCart(request, response);
 			break;
-		case "/Cart/SubmitReview":
-			this.handlePostBookReview(request, response);
+		case "/Cart/GoToPayment":
+			if(UserModel.isLoggedIn(request)) {
+				response.sendRedirect("/bookStore/Payment");
+				return;
+			} else {
+				SessionAttributeManager.setErrorMessage("Please login first!", request);
+			}
 			break;
 		}
 		response.sendRedirect("/bookStore/Cart");
@@ -86,29 +92,6 @@ public class ShoppingCartServlet extends HttpServlet {
             e.printStackTrace();
             SessionAttributeManager.setErrorMessage(e.getMessage(), request);
         }
-	}
-	
-	/**
-	 * Handle Post book review request
-	 *
-	 * @param route
-	 * @param request
-	 * @param response
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	private void handlePostBookReview(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String bid = request.getParameter("bid");
-		String rating = request.getParameter("rating");
-		String review = request.getParameter("review");
-		try {
-			BookStoreModel.getInstance().rateBook(bid, rating, review, request);
-			SessionAttributeManager.setSuccessMessage("Review successfully submitted!", request);
-		} catch (Exception e) {
-			SessionAttributeManager.setErrorMessage(e.getMessage(), request);
-		}
-		response.sendRedirect("/bookStore/Cart");
 	}
 
 }
