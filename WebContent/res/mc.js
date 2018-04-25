@@ -41,12 +41,13 @@ function fetchAjaxRequest(method, url, formData, cb) {
 }
 
 function fetchReviews(bid) {
+	var resultTable = document.getElementById("book-detail-review-tbody");
+	if(resultTable==null) return;
 	var formData = new FormData();
 	formData.append("bid",bid);
-	fetchAjaxRequest("POST", "/bookStore/Start/Ajax/Review", formData, function(res){
+	fetchAjaxRequest("POST", "/bookStore/Ajax/Review", formData, function(res){
 		if(res.code===1){
 			var result = res.result;
-			var resultTable = document.getElementById("book-detail-review-tbody");
 			// remove previous results
 			while (resultTable.firstChild) {
 				resultTable.removeChild(resultTable.firstChild);
@@ -85,6 +86,58 @@ function billingCheckboxDidChange(checkbox) {
 		document.getElementById("billingDiv").style.display = "block";
 //		checkbox.value = "off";
 	}
+}
+
+
+function validateRegister(form) {
+	var errors = {
+			"usernameErr":false,
+			"firstnameErr":false,
+			"lastnameErr":false,
+			"passwordErr":false,
+			"verifiedPasswordErr":false
+	};
+	var errorMessages = [];
+	if (form.elements.username.value == "") {
+		errors.usernameErr = true;
+		errorMessages.push("Username cannot be empty!");
+	} else if (form.elements.username.value.length < 4 || form.elements.username.value.length > 20) {
+		errors.usernameErr = true;
+		errorMessages.push("Username must be between 4 - 20 characters!");
+	}
+	if (form.elements.firstname.value == "") {
+		errors.firstnameErr = true;
+		errorMessages.push("Firstname cannot be empty!");
+	} else if (form.elements.firstname.value.length < 4 || form.elements.firstname.value.length > 20) {
+		errors.firstnameErr = true;
+		errorMessages.push("Firstname must be between 4 - 20 characters!");
+	}
+	if (form.elements.lastname.value == "") {
+		errors.lastnameErr = true;
+		errorMessages.push("Lastname cannot be empty!");
+	} else if (form.elements.lastname.value.length < 4 || form.elements.lastname.value.length > 20) {
+		errors.lastnameErr = true;
+		errorMessages.push("Lastname must be between 4 - 20 characters!");
+	}
+	if (form.elements.password.value == "") {
+		errors.passwordErr = true;
+		errorMessages.push("Password cannot be empty!");
+	} else if (form.elements.password.value.length < 6 || form.elements.password.value.length > 16) {
+		errors.passwordErr = true;
+		errorMessages.push("Password must be between 6 - 16 characters!");
+	} else if (form.elements.verifiedPassword.value == "") {
+		errors.verifiedPasswordErr = true;
+		errorMessages.push("Verified Password cannot be empty!");
+	} else if (form.elements.verifiedPassword.value !== form.elements.password.value) {
+		errors.verifiedPasswordErr = true;
+		errorMessages.push("Passwords did not match!");
+	}
+	if (errors.passwordErr || errors.verifiedPasswordErr) {
+		form.elements.password.value = "";
+		form.elements.verifiedPassword.value = "";
+	}
+	
+	return renderErrorMessages(errors, errorMessages);
 }
 
 function validatePurchase(form) {
@@ -175,6 +228,10 @@ function validatePurchase(form) {
 		}
 	}	
 	
+	return renderErrorMessages(errors, errorMessages);
+}
+
+function renderErrorMessages(errors, errorMessages) {
 	var errorStr = "";
 	if(errorMessages.length>0){
 		var erorrLabel = document.getElementById("errorLabel");
@@ -189,7 +246,6 @@ function validatePurchase(form) {
 	document.getElementById("errorLabel").innerText = errorStr;
 	
 	return errorMessages.length===0;
-	
 }
 
 function validateRating(form) {
@@ -218,7 +274,7 @@ function fetchTop10Purchases(){
 	} else {
 		request = new ActiveXObject("Microsoft.XMLHTTP");
 	}
-	request.open("POST", "/bookStore/Start/Ajax/Analytics", true);
+	request.open("POST", "/bookStore/Ajax/Analytics", true);
 	request.onreadystatechange = function() {
 		if(request.readyState == 4 && request.status == 200) {
 			var res = JSON.parse(request.responseText);

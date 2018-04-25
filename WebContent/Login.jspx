@@ -21,29 +21,38 @@
 </script>
 </head>
 <body>
-	<jsp:include page="NavBar.jspx" />
-	<jsp:directive.include file="Messager.jspx" />
-	<div class="mc-body">
-		<form action="" method="post"
-			onsubmit="return validateRegister(this);">
-			<fieldset>
-				<legend>Login</legend>
-				<div id="errorDiv">
-					<label class="error"></label>
-				</div>
-				<table>
-					<tr>
-						<td><label for="username">Username:<i class="error" id="usernameErr">*</i></label></td>
-						<td><input id="username" type="text" name="username" value="${username}" placeholder="Enter username" /></td>
-					</tr>
-					<tr>
-						<td><label for="password">Password:<i class="error" id="passwordErr">*</i></label></td>
-						<td><input id="password" type="password" name="password" placeholder="Enter password" /></td>
-					</tr>
-				</table>
-				<input type="submit" name="submit" value="Login" />
-			</fieldset>
-		</form>
+	<jsp:include page="partials/NavBar.jspx" />
+	<div class="mc-container">
+		<jsp:directive.include file="partials/Messager.jspx" />
+		<div class="mc-body">
+			<c:if
+				test="${empty sessionScope.user or sessionScope.user.isVisitor()}">
+				<form action="" method="post"
+					onsubmit="return validateRegister(this);">
+					<fieldset>
+						<legend>Login</legend>
+						<div id="errorDiv">
+							<label class="error"></label>
+						</div>
+						<table>
+							<tr>
+								<td><label for="username">Username:<i class="error"
+										id="usernameErr">*</i></label></td>
+								<td><input id="username" type="text" name="username"
+									value="${username}" placeholder="Enter username" /></td>
+							</tr>
+							<tr>
+								<td><label for="password">Password:<i class="error"
+										id="passwordErr">*</i></label></td>
+								<td><input id="password" type="password" name="password"
+									placeholder="Enter password" /></td>
+							</tr>
+						</table>
+						<input type="submit" name="submit" value="Login" />
+					</fieldset>
+				</form>
+			</c:if>
+		</div>
 	</div>
 </body>
 	</html>

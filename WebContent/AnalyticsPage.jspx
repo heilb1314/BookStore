@@ -20,95 +20,103 @@
 </script>
 </head>
 <body>
-	<jsp:directive.include file="NavBar.jspx" />
-	<jsp:directive.include file="Messager.jspx" />
-	<div class="mc-body">
-		<c:if test="${empty sessionScope.errorMessage}">
-			<h4>Top 10 Selling Books</h4>
-			<div class="ttable-div">
-				<table id="popularBooksTable" class="ttable" style="display: none;">
-					<tr>
-						<th>BookID</th>
-						<th>Title</th>
-						<th>Category</th>
-						<th>Price</th>
-						<th>Purchases</th>
-					</tr>
-					<tbody id="popularBooksTableBody">
-					</tbody>
-				</table>
-			</div>
-			<div style="margin-bottom: 10px;">
-				<form action="" method="post">
-					<label>Choose Month:</label> <select name="month">
-						<option value="1">January</option>
-						<option value="2">February</option>
-						<option value="3">March</option>
-						<option value="4">April</option>
-						<option value="5">May</option>
-						<option value="6">June</option>
-						<option value="7">July</option>
-						<option value="8">August</option>
-						<option value="9">September</option>
-						<option value="10">October</option>
-						<option value="11">November</option>
-						<option value="12">December</option>
-					</select> <input id="monthsubmit" type="submit" name="submit"
-						value="Get Monthly Report" />
-				</form>
-			</div>
-			<c:if test="${not empty sessionScope.monthlyStats}">
-				<h4>Books sold each Month:</h4>
+	<jsp:directive.include file="partials/NavBar.jspx" />
+	<div class="mc-container">
+		<jsp:directive.include file="partials/Messager.jspx" />
+		<div class="mc-body">
+			<c:if
+				test="${not empty sessionScope.user and not sessionScope.user.isVisitor()}">
+				<h4>Top 10 Selling Books</h4>
 				<div class="ttable-div">
-					<table class="ttable">
+					<table id="popularBooksTable" class="ttable" style="display: none;">
 						<tr>
+							<th>BookID</th>
 							<th>Title</th>
 							<th>Category</th>
-							<th>Purchase Date</th>
+							<th>Price</th>
+							<th>Purchases</th>
 						</tr>
-						<c:forEach items="${sessionScope.monthlyStats}" var="stat">
-							<tr>
-								<td>${stat.getBook().getTitle()}</td>
-								<td>${stat.getBook().getCategory()}</td>
-								<td>${stat.getFormattedDate()}</td>
-							</tr>
-						</c:forEach>
+						<tbody id="popularBooksTableBody">
+						</tbody>
 					</table>
 				</div>
-			</c:if>
-			<div style="margin-top: 10px">
-				<form action="" method="post">
-					<input id="stats" type="submit" name="submit"
-						value="Get Statistics" />
-				</form>
-				<c:if test="${not empty sessionScope.stats}">
-					<h4>Total Spend per each zip code for each user (Each user might have multiple zip code)</h4>
+				<div style="margin-bottom: 10px;">
+					<form
+						action="${pageContext.request.contextPath}/Analytics/MonthlyReport"
+						method="post">
+						<label>Choose Month:</label> <select name="month">
+							<option value="1">January</option>
+							<option value="2">February</option>
+							<option value="3">March</option>
+							<option value="4">April</option>
+							<option value="5">May</option>
+							<option value="6">June</option>
+							<option value="7">July</option>
+							<option value="8">August</option>
+							<option value="9">September</option>
+							<option value="10">October</option>
+							<option value="11">November</option>
+							<option value="12">December</option>
+						</select> <input id="monthsubmit" type="submit" name="submit"
+							value="Get Monthly Report" />
+					</form>
+				</div>
+				<c:if test="${not empty sessionScope.monthlyStats}">
+					<h4>Books sold each Month:</h4>
 					<div class="ttable-div">
 						<table class="ttable">
-							<thead>
-								<th>user</th>
-								<th>Total Spent</th>
-								<th>Zip Code</th>
-							</thead>
-							<tbody>
-								<c:forEach items="${sessionScope.stats}" var="stat">
-									<tr>
-										<td>******</td>
-										<td><f:formatNumber type="currency">${stat.getKey()}</f:formatNumber></td>
-										<td>${stat.getValue()}</td>
-									</tr>
-								</c:forEach>
-							</tbody>
+							<tr>
+								<th>Title</th>
+								<th>Category</th>
+								<th>Purchase Date</th>
+							</tr>
+							<c:forEach items="${sessionScope.monthlyStats}" var="stat">
+								<tr>
+									<td>${stat.getBook().getTitle()}</td>
+									<td>${stat.getBook().getCategory()}</td>
+									<td>${stat.getFormattedDate()}</td>
+								</tr>
+							</c:forEach>
 						</table>
 					</div>
 				</c:if>
-			</div>
-		</c:if>
+				<div style="margin-top: 10px">
+					<form
+						action="${pageContext.request.contextPath}/Analytics/Statistics"
+						method="post">
+						<input id="stats" type="submit" name="submit"
+							value="Get Statistics" />
+					</form>
+					<c:if test="${not empty sessionScope.stats}">
+						<h4>Total Spend per each zip code for each user (Each user
+							might have multiple zip code)</h4>
+						<div class="ttable-div">
+							<table class="ttable">
+								<thead>
+									<th>user</th>
+									<th>Total Spent</th>
+									<th>Zip Code</th>
+								</thead>
+								<tbody>
+									<c:forEach items="${sessionScope.stats}" var="stat">
+										<tr>
+											<td>******</td>
+											<td><f:formatNumber type="currency">${stat.getKey()}</f:formatNumber></td>
+											<td>${stat.getValue()}</td>
+										</tr>
+									</c:forEach>
+								</tbody>
+							</table>
+						</div>
+					</c:if>
+				</div>
+				<script>
+					fetchTop10Purchases();
+					setInterval(fetchTop10Purchases, 3000);
+				</script>
+			</c:if>
+		</div>
 	</div>
-	<script>
-		fetchTop10Purchases();
-		setInterval(fetchTop10Purchases, 3000);
-	</script>
 </body>
 	</html>
 </jsp:root>

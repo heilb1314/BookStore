@@ -10,7 +10,7 @@
 		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
 		omit-xml-declaration="true" />
 	<div class="book card">
-		<form action="" method="POST"
+		<form action="${pageContext.request.contextPath}/Home/AddToCart" method="POST"
 			onsubmit="return validateShoppingCartItem(this);">
 			<input type="text" class="hidden" name="bid" value="${book.bid}" display="none" />
 			<h5 class="card-title">Title: ${book.title}</h5>

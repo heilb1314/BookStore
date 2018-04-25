@@ -21,60 +21,60 @@
 </script>
 </head>
 <body>
-	<jsp:include page="NavBar.jspx" />
-	<div class="mc-body">
-		<c:choose>
-			<c:when test="${empty successMessage}">
-				<c:if test="${not empty errorMessage}">
-					<h4 class="error">${errorMessage}</h4>
-				</c:if>
+	<jsp:include page="partials/NavBar.jspx" />
+	<div class="mc-container">
+		<jsp:directive.include file="partials/Messager.jspx" />
+		<c:if
+			test="${empty sessionScope.user or sessionScope.user.isVisitor()}">
+			<div class="mc-body">
 				<form action="" method="POST"
 					onsubmit="return validateRegister(this);">
 					<fieldset>
 						<legend>Register a new User</legend>
 						<div id="errorDiv">
-							<label class="error"></label>
+							<label class="error" id="errorLabel"></label>
 						</div>
-						<TABLE>
+						<table>
 							<tr>
-								<td><label for="username">Username (at least 4 lengths):<i class="error"
-										id="usernameErr">*</i></label></td>
+								<td><label for="username">Username (at least 4
+										lengths):<i class="error" id="usernameErr">*</i>
+								</label></td>
 								<td><input type="text" name="username" value="${username}"
 									placeholder="Enter username" /></td>
 							</tr>
 							<tr>
-								<td><label for="firstname">Firstname (at least 4 lengths):<i
-										class="error" id="firstnameErr">*</i></label></td>
+								<td><label for="firstname">Firstname (at least 4
+										lengths):<i class="error" id="firstnameErr">*</i>
+								</label></td>
 								<td><input type="text" name="firstname"
 									value="${firstname}" placeholder="Enter firstname" /></td>
 							</tr>
 							<tr>
-								<td><label for="lastname">Lastname (at least 4 lengths):<i class="error"
-										id="lastnameErr">*</i></label></td>
+								<td><label for="lastname">Lastname (at least 4
+										lengths):<i class="error" id="lastnameErr">*</i>
+								</label></td>
 								<td><input type="text" name="lastname" value="${lastname}"
 									placeholder="Enter lastname" /></td>
 							</tr>
 							<tr>
-								<td><label for="password">Password (at least 6 lengths):<i class="error"
-										id="passwordErr">*</i></label></td>
+								<td><label for="password">Password (at least 6
+										lengths):<i class="error" id="passwordErr">*</i>
+								</label></td>
 								<td><input type="password" name="password"
 									placeholder="Enter password" /></td>
 							</tr>
 							<tr>
 								<td><label for="verifiedPassword">Verify Password:<i
-										class="error" id="verifyPasswordErr">*</i></label></td>
+										class="error" id="verifiedPasswordErr">*</i></label></td>
 								<td><input type="password" name="verifiedPassword"
 									placeholder="Re-enter password" /></td>
 							</tr>
-						</TABLE>
+						</table>
 						<input type="submit" name="submit" value="Register" />
 					</fieldset>
 				</form>
-			</c:when>
-			<c:otherwise>
-				<h3>${successMessage}</h3>
-			</c:otherwise>
-		</c:choose>
+			</div>
+		</c:if>
 	</div>
 </body>
 	</html>
