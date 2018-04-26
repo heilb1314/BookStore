@@ -8,3 +8,4 @@
               url="jdbc:mysql://localhost:3306/book_store?user=root"/>
     <ResourceLink global="jdbc/EECS" name="jdbc/EECS" type="javax.sql.DataSource"/>
 </Context>
+

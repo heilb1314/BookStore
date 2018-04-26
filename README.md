@@ -21,3 +21,35 @@ EECS4413 Project
     <br>• JRE System Library
     <br>• Web App Libraries
     <br>• Server Runtime -> Apache Tomcat v8.5
+
+## SSL Configuration
+
+1. Add this to your tomcat directory's `conf/server.xml`, where "<pathToRepo>" is the location of the Keystore,
+or alternatively move the Keystore somewhere else. The keystore is the one at the root of this repository
+
+```$xslt
+    <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
+               maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS"
+               keyAlias="selfsigned_tomcat" keystoreFile="<pathToKeystore>/KeyStore.jks"
+               keystorePass="123456" />
+    <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
+```
+
+Add the following to your tomcat directory's `conf/web.xml`:
+
+```$xslt
+      <security-constraint>
+              <web-resource-collection>
+                      <web-resource-name>Entire Application</web-resource-name>
+                      <url-pattern>/*</url-pattern>
+              </web-resource-collection>
+              <!-- auth-constraint goes here if you requre authentication -->
+              <user-data-constraint>
+                      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+              </user-data-constraint>
+      </security-constraint>
+```
+
+This will rewrite all requests to port 8080 via Secure socket layer.
+
