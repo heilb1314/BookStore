@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PoItemBean {
 
+    public PoItemBean(){}
+
     private PoItemIdBean pk = new PoItemIdBean();
     @XmlAttribute
     private int price;
