@@ -15,10 +15,8 @@ EECS4413 Project
    <br>• javax.json-1.0.jar
    <br>• jersey-bundle-1.19.1.jar
    <br>• mysql-connector-java-5.1.45-bin.jar
-4. Install [MySQL Connector/J Platform Independent](https://dev.mysql.com/downloads/connector/j/)
-   <br> Unzip MySQL Connector/J and put <b><i>mysql-connector-java-5.1.45-bin.jar</i></b> into tomcat/lib directory
-5. Configure Eclipse with Tomcat (in Java EE perspective, explore the Servers tab and add the Tomcat directory)
-6. Right click on the project name -> Build Path -> Configure Build path... -> Libraries -> Add Library
+4. Configure Eclipse with Tomcat (in Java EE perspective, explore the Servers tab and add the Tomcat directory)
+5. Right click on the project name -> Build Path -> Configure Build path... -> Libraries -> Add Library
     <br>• EAR Libraries
     <br>• JRE System Library
     <br>• Web App Libraries
